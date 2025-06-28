@@ -1,0 +1,43 @@
+{
+  "name": "claude-dev-radar",
+  "version": "1.0.0",
+  "description": "AI-powered development tools: R.A.D.A.R. repository analysis + C.I.D.E.R. atomic issues system for Claude Code",
+  "main": "index.js",
+  "bin": {
+    "claude-radar": "./bin/claude-radar.js",
+    "claude-cider": "./bin/claude-cider.js",
+    "claude-setup": "./bin/claude-setup.js"
+  },
+  "scripts": {
+    "install-global": "npm install -g .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "claude",
+    "ai",
+    "development",
+    "automation",
+    "repository-analysis",
+    "radar",
+    "cider",
+    "freelance",
+    "productivity"
+  ],
+  "author": "AI Developer Tools",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "commander": "^9.0.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diaztunjano/claude-dev-radar.git"
+  },
+  "homepage": "https://github.com/diaztunjano/claude-dev-radar#readme",
+  "preferGlobal": true
+}
