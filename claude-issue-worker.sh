@@ -30,7 +30,7 @@ log_error() {
 if [ $# -eq 0 ]; then
     log_error "Usage: $0 <issue_number> [project_area]"
     echo "  issue_number: GitHub issue number to work on"
-    echo "  project_area: frontend|worker|database|docs (optional, default: frontend)"
+    echo "  project_area: frontend|backend|database|docs (optional, default: frontend)"
     exit 1
 fi
 
@@ -39,9 +39,15 @@ project_area=${2:-"frontend"}
 
 log_info "Starting Claude Code workflow for issue #$issue in $project_area area"
 
-# Validate we're in the correct directory
-if [[ ! -f "package.json" ]] || [[ ! -d "src" ]]; then
-    log_error "Please run this script from the Janome project root directory"
+# Validate we're in the correct directory with .claude/ structure
+if [[ ! -d ".git" ]]; then
+    log_error "Please run this script from a git repository root directory"
+    exit 1
+fi
+
+if [[ ! -d ".claude" ]]; then
+    log_error "No .claude/ structure found. Please initialize first."
+    log_info "Run: claude-setup init"
     exit 1
 fi
 
@@ -52,127 +58,223 @@ if ! command -v claude &> /dev/null; then
     exit 1
 fi
 
-log_success "Environment validated. Starting Claude Code session..."
+# Read project context from .claude/ files
+read_claude_context() {
+    local project_state=""
+    local active_epic=""
+    local next_session=""
+    
+    if [[ -f ".claude/current/project-state.md" ]]; then
+        project_state=$(cat ".claude/current/project-state.md")
+    fi
+    
+    if [[ -f ".claude/current/active-epic.md" ]]; then
+        active_epic=$(cat ".claude/current/active-epic.md")
+    fi
+    
+    if [[ -f ".claude/current/next-session.md" ]]; then
+        next_session=$(cat ".claude/current/next-session.md")
+    fi
+    
+    # Export for use in Claude prompts
+    export CLAUDE_PROJECT_STATE="$project_state"
+    export CLAUDE_ACTIVE_EPIC="$active_epic"  
+    export CLAUDE_NEXT_SESSION="$next_session"
+}
+
+# Update session file with progress
+update_session_file() {
+    local session_description="$1"
+    local changes_made="$2"
+    
+    # Find the most recent session file for this issue
+    local current_month=$(date +%Y-%m)
+    local session_dir=".claude/sessions/$current_month"
+    
+    if [[ -d "$session_dir" ]]; then
+        # Look for session file containing this issue number
+        local session_file=$(find "$session_dir" -name "*work-issue-$issue*" -type f | head -1)
+        
+        if [[ -n "$session_file" && -f "$session_file" ]]; then
+            # Update the session file with progress
+            local temp_file=$(mktemp)
+            local in_changes_section=false
+            
+            while IFS= read -r line; do
+                echo "$line" >> "$temp_file"
+                
+                # Add changes after "### Files Modified" line
+                if [[ "$line" == "### Files Modified" ]]; then
+                    echo "$changes_made" >> "$temp_file"
+                    in_changes_section=true
+                elif [[ "$line" == "### New Files Created" ]]; then
+                    in_changes_section=false
+                fi
+            done < "$session_file"
+            
+            mv "$temp_file" "$session_file"
+            log_success "Updated session file: $session_file"
+        fi
+    fi
+}
+
+log_success "Environment validated. Reading .claude/ context..."
+
+# Read current project context
+read_claude_context
+
+log_success "Starting Claude Code session with context..."
 
 claude \
-  "Working on Janome Agent Dashboard issue #$issue - Project Area: $project_area
+  "Working on software development issue #$issue - Project Area: $project_area
 
-## CONTEXTO DEL PROYECTO JANOME
-Este es el Panel Administrativo Janome - un sistema de gestión de talleres, asistentes y equipos industriales.
-Stack: React + TypeScript + Vite + Supabase + Cloudflare Workers
-Protocolo: C.I.D.E.R. (Contextualizar, Iterar, Documentar, Ejecutar, Reflexionar)
+## CURRENT PROJECT CONTEXT (.claude/ files)
+Use this context to understand the current project state:
 
-## FASE 1: CONTEXTUALIZACIÓN & VALIDACIÓN
-- OBLIGATORIO PRIMERO: Lee CLAUDE.md para entender las reglas y estado actual del sistema
-- OBLIGATORIO SEGUNDO: Lee _MANIFEST.md y specs/03_DATABASE/_DATABASE_OVERVIEW.md
-- OBLIGATORIO TERCERO: Revisa PRs recientemente cerradas/merged para entender el contexto del código actual
-- Lee el archivo [FEAT]/[FIX] específico relacionado con issue #$issue en specs/01_FEATURES/
-- Verifica que issue #$issue existe y es ejecutable (no bloqueado/duplicado)
-- Revisa git status: \`git status --porcelain\` debe estar limpio
-- Identifica complejidad: [SIMPLE|MEDIUM|COMPLEX] y estima esfuerzo
-- Documenta dependencias: otros issues, archivos críticos, base de datos
-- ANTES de continuar: comenta en el issue tu análisis y plan de trabajo
+### PROJECT STATE:
+$CLAUDE_PROJECT_STATE
 
-## FASE 2: ANÁLISIS DE IMPACTO
-- Verifica que el proyecto compila: \`npm run build\` para establecer estado inicial
-- Si project_area='worker': ejecuta tests del worker: \`cd worker && npm test\` y \`npm run build\`
-- Si project_area='database': revisa specs/03_DATABASE/ para cambios de schema
-- Identifica sistemas afectados y posibles breaking changes
-- Si COMPLEX: crea plan detallado en issue y solicita revisión
-- Usa context7 para docs de arquitectura y cambios recientes relacionados
-- PRIORIDAD: Código simple, eficiente y ágil - evita over-engineering
+### ACTIVE EPIC:
+$CLAUDE_ACTIVE_EPIC
 
-## FASE 3: IMPLEMENTACIÓN INCREMENTAL
-### Para project_area='frontend':
-- Verificar que compila: \`npm run build\` después de cambios significativos
-- Verificar tipos: \`npm run type-check\` para asegurar TypeScript correcto
-- Linting opcional: \`npm run lint\` solo si hay tiempo
-- PRIORIDAD: Funcionalidad working + tipos correctos
-### Para project_area='worker':
-- OBLIGATORIO: Tests después de cada cambio: \`cd worker && npm test\`
-- OBLIGATORIO: Build check: \`cd worker && npm run build\`
-- OBLIGATORIO: Tipos: \`cd worker && npx tsc --noEmit\`
-- Worker es crítico - tests son obligatorios aquí
-### Para project_area='database':
-- Aplicar cambios en orden: migration → functions → testing con Supabase MCP
-- Documentar en specs/03_DATABASE/
+### NEXT SESSION PLAN:
+$CLAUDE_NEXT_SESSION
 
-- Commits incrementales: 'WIP: #$issue - [descripción clara]'
-- Actualizar issue cada 2-3 commits con progreso real
-- Si bloqueado: documentar en issue y reconsiderar enfoque
-- ENFOQUE: Soluciones simples que funcionen, no perfectas
+## C.I.D.E.R. DEVELOPMENT PROTOCOL
+Follow this protocol throughout the session:
+- **C**ontextualize: Understand current state and requirements
+- **I**terate: Plan and break down work into manageable steps
+- **D**ocument: Record decisions and progress in .claude/ files
+- **E**xecute: Implement with testing and validation
+- **R**eflect: Update project state and plan next steps
 
-## FASE 4: VALIDACIÓN & LIMPIEZA
-### Validación completa:
-- FRONTEND: \`npm run build\` debe pasar + \`npm run type-check\` sin errores TypeScript
-- WORKER: Si modificado, OBLIGATORIO: \`cd worker && npm test && npm run build\` debe pasar 100%
-- Probar funcionalidad en browser: http://localhost:5173/ usando Autobrowser MCP
-- Verificar que las funciones de Supabase siguen funcionando (usar MCP si es necesario)
+## PHASE 1: CONTEXTUALIZATION
+- Read issue #$issue details and requirements carefully
+- Understand how this issue fits within the current active epic
+- Verify that issue #$issue exists and is actionable (not blocked/duplicate)
+- Check git status: \`git status --porcelain\` should be clean
+- Identify complexity: [SIMPLE|MEDIUM|COMPLEX] and estimate effort
+- Document dependencies: other issues, critical files, current epic status
+- Comment on the issue with your analysis and work plan
 
-### Limpieza y simplicidad:
-- Remover código obsoleto/no usado - mantener codebase limpio
-- Simplificar donde sea posible - MENOS es MÁS
-- Verificar que no hay breaking changes en APIs críticas
-- Self-review: leer TODOS los cambios con perspectiva fresca y pragmática
-- OBJETIVO: Código que funciona, no código perfecto
+## PHASE 2: IMPACT ANALYSIS
+- Verify project builds: \`npm run build\` to establish baseline
+- If project_area='backend': run backend tests and build checks
+- If project_area='database': review database schema and migration files
+- Identify affected systems and potential breaking changes
+- If COMPLEX: create detailed plan in issue and request review
+- PRIORITY: Simple, efficient, and agile code - avoid over-engineering
 
-## FASE 5: ENTREGA & DOCUMENTACIÓN
-### Si PR existente:
-- Actualizar con resumen de cambios
-- Forzar push si es necesario: \`git push origin --force-with-lease\`
+## PHASE 3: INCREMENTAL IMPLEMENTATION
+### For project_area='frontend':
+- Verify builds: \`npm run build\` after significant changes
+- Verify types: \`npm run type-check\` to ensure TypeScript correctness
+- Optional linting: \`npm run lint\` if time permits
+- PRIORITY: Working functionality + correct types
+### For project_area='backend':
+- REQUIRED: Tests after each change: \`npm test\`
+- REQUIRED: Build check: \`npm run build\`
+- REQUIRED: Types: \`npx tsc --noEmit\` (if TypeScript)
+- Backend is critical - tests are mandatory
+### For project_area='database':
+- Apply changes in order: migration → functions → testing
+- Document database changes appropriately
 
-### Si PR nuevo:
-- Crear con template incluyendo:
+- Incremental commits: 'WIP: #$issue - [clear description]'
+- Update issue every 2-3 commits with real progress
+- If blocked: document in issue and reconsider approach
+- FOCUS: Simple solutions that work, not perfect ones
+
+## PHASE 4: VALIDATION & CLEANUP
+### Complete validation:
+- FRONTEND: \`npm run build\` must pass + \`npm run type-check\` without TypeScript errors
+- BACKEND: If modified, REQUIRED: \`npm test && npm run build\` must pass 100%
+- Test functionality in browser if applicable
+- Verify that external integrations still work
+
+### Cleanup and simplicity:
+- Remove obsolete/unused code - keep codebase clean
+- Simplify where possible - LESS is MORE
+- Verify no breaking changes in critical APIs
+- Self-review: read ALL changes with fresh, pragmatic perspective
+- GOAL: Code that works, not perfect code
+
+## PHASE 5: DOCUMENTATION & REFLECTION (C.I.D.E.R.)
+### Update .claude/ files:
+- Update .claude/current/active-epic.md with progress made
+- Update session file in .claude/sessions/ with:
+  * Files modified
+  * Decisions made
+  * Problems encountered and solutions
+  * Time spent and complexity
+- Update .claude/current/next-session.md with next steps
+- If epic is completed, update .claude/epics/epics-roadmap.md
+
+### If existing PR:
+- Update with summary of changes
+- Reference issue: Closes #$issue
+- Force push if necessary: \`git push origin --force-with-lease\`
+
+### If new PR:
+- Create with template including:
   * Closes #$issue
-  * Testing realizado
-  * Breaking changes (si aplica)
-  * Screenshots/demos para cambios UI
-  * Actualización de documentación requerida
+  * Epic context and progress
+  * Testing performed
+  * Breaking changes (if applicable)
+  * Screenshots/demos for UI changes
+  * .claude/ files updated
 
-### Documentación:
-- OBLIGATORIO: Actualizar archivo [LOG] correspondiente en specs/02_LOGS/
-- Si nuevas funciones/endpoints: documentar en specs/ apropiado
-- Seguir protocolo C.I.D.E.R. para documentación
+### Documentation:
+- REQUIRED: Update relevant documentation files
+- If new functions/endpoints: document appropriately
+- Follow project documentation standards
 
-## MANEJO DE ERRORES & LÍMITES
-- Si cualquier fase falla: PARAR, documentar en issue, pedir orientación
-- Si build falla: arreglar inmediatamente o rollback a último estado funcional
-- Si worker tests fallan: OBLIGATORIO arreglar antes de continuar
-- Si complejidad excede estimación: actualizar issue y considerar división
-- Máximo 90 minutos de trabajo (pedir continuación si es necesario)
-- NUNCA commitear código que rompa el build
-- NUNCA commitear cambios de worker sin tests pasando
+## ERROR HANDLING & LIMITS
+- If any phase fails: STOP, document in issue, ask for guidance
+- If build fails: fix immediately or rollback to last working state
+- If backend tests fail: REQUIRED to fix before continuing
+- If complexity exceeds estimation: update issue and consider splitting
+- Maximum 90 minutes of work (ask for continuation if needed)
+- NEVER commit code that breaks the build
+- NEVER commit backend changes without passing tests
 
-## HERRAMIENTAS ESPECÍFICAS JANOME
-- Base de datos: usar Supabase MCP, aplicar migraciones en orden
-- Workers: deployar solo después de testing completo - CRÍTICO
-- Frontend: usar hooks existentes, seguir patrones establecidos, SIMPLICIDAD
-- Documentación: mantener specs/ actualizado según protocolo C.I.D.E.R.
-- PRs: revisar PRs recientes merged/closed para entender el contexto del código actual
+## PROJECT-SPECIFIC TOOLS
+- Database: apply migrations in correct order, test thoroughly
+- Backend services: deploy only after complete testing - CRITICAL
+- Frontend: use existing patterns, follow established conventions, SIMPLICITY
+- Documentation: keep project docs updated according to standards
+- PRs: review recent merged/closed PRs to understand current code context
 
-## FILOSOFÍA DE DESARROLLO JANOME
-- SIMPLICIDAD sobre complejidad
-- FUNCIONALIDAD sobre perfección
-- AGILIDAD sobre documentación excesiva
-- WORKING CODE sobre código elegante
-- Tests SOLO donde son críticos (worker)
+## DEVELOPMENT PHILOSOPHY
+- SIMPLICITY over complexity
+- FUNCTIONALITY over perfection
+- AGILITY over excessive documentation
+- WORKING CODE over elegant code
+- Tests where they are critical (backend/APIs)
 
-## TIMEZONE IMPORTANTE
-- SIEMPRE usar timezone America/Santiago para fechas
-- Verificar conversiones UTC ↔ Chile en código de fechas
+## SESSION COMPLETION
+- When finished, provide a clear summary of work completed
+- Confirm all .claude/ files are updated
+- Confirm issue #$issue is resolved or appropriately updated
+- Document any remaining work or next steps
 
-¡Procede siguiendo este protocolo estrictamente!" \
-  --allowedTools "Edit" "Write" "Read" \
-  "Bash(gh:*)" "Bash(rg:*)" "Bash(find:*)" "Bash(ls:*)" "Bash(grep:*)" "context7:*" \
-  "Bash(npm:*)" "Bash(git:*)" "Bash(cd:*)" "Bash(npx:*)" \
-  "mcp_browsermcp_browser_*"  "fetch_pull_request" \
-  "sequential-thinking"
+Ready to begin C.I.D.E.R. development session for issue #$issue!" \
+  --allowedTools "Read" "Write" "Edit" "MultiEdit" \
+  "Bash(git:*)" "Bash(npm:*)" "Bash(npx:*)" "Bash(yarn:*)" \
+  "Bash(gh:*)" "Bash(find:*)" "Bash(ls:*)" "Bash(grep:*)" "Bash(rg:*)" \
+  "Bash(curl:*)" "Bash(cd:*)" "Bash(pwd:*)" "Bash(echo:*)" \
+  "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)"
 
-# Log completion
-if [ $? -eq 0 ]; then
+# Capture result and update session documentation
+result=$?
+if [ $result -eq 0 ]; then
     log_success "Claude Code session completed for issue #$issue"
+    update_session_file "Issue #$issue work session" "Session completed successfully"
     log_info "Check the issue comments and any new PR for results"
+    log_info "Session documented in .claude/sessions/"
 else
     log_error "Claude Code session failed for issue #$issue"
-    exit 1
+    update_session_file "Issue #$issue work session" "Session failed with exit code $result"
 fi
+
+exit $result

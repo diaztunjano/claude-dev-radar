@@ -1,6 +1,6 @@
 # 🤖 Claude Issue Worker
 
-Automatización para trabajar en issues con Claude Code siguiendo el protocolo C.I.D.E.R. del proyecto Janome.
+Automation for working on GitHub issues with Claude Code following structured development practices.
 
 ## 🚀 Uso Básico
 
@@ -60,57 +60,57 @@ Automatización para trabajar en issues con Claude Code siguiendo el protocolo C
 
 ### Frontend
 ```bash
-npm run build         # Build check (criterio principal)
-npm run type-check    # Validación TypeScript (obligatorio)
-npm run lint          # ESLint (opcional)
+npm run build         # Build check (primary criterion)
+npm run type-check    # TypeScript validation (required)
+npm run lint          # ESLint (optional)
 ```
 
-### Worker
+### Backend
 ```bash
-cd worker && npm test        # Tests del worker
-cd worker && npm run build   # Build check
-cd worker && npx tsc --noEmit # Type checking
+npm test             # Backend tests
+npm run build        # Build check
+npx tsc --noEmit     # Type checking (if TypeScript)
 ```
 
 ### Database
-- Revisa `specs/03_DATABASE/` para migraciones
-- Aplica cambios en orden: migration → functions → testing
+- Review database migration files
+- Apply changes in order: migration → functions → testing
 
-## ⚠️ Características de Seguridad
+## ⚠️ Safety Features
 
-- **Tiempo límite**: 90 minutos máximo
-- **Build obligatorio**: No permite commits que rompan el build
-- **Worker tests críticos**: Tests obligatorios solo para worker (crítico)
-- **Rollback automático**: Si algo falla, vuelve al estado anterior
-- **Validación pragmática**: Build + tipos para frontend, tests completos para worker
+- **Time limit**: 90 minutes maximum
+- **Build required**: Does not allow commits that break the build
+- **Backend tests critical**: Tests mandatory only for backend (critical)
+- **Automatic rollback**: If something fails, returns to previous state
+- **Pragmatic validation**: Build + types for frontend, complete tests for backend
 
-## 🇨🇱 Consideraciones Especiales Janome
+## 🔧 Project-Specific Considerations
 
-- **Timezone**: Siempre usa `America/Santiago` para fechas
-- **Protocolo C.I.D.E.R.**: Documentación obligatoria en `specs/`
-- **Supabase**: Aplica migraciones en orden correcto
-- **Workers**: Deploy solo después de testing completo
+- **Timezone**: Configure appropriate timezone for date handling
+- **Documentation**: Maintain project documentation standards
+- **Database**: Apply migrations in correct order
+- **Services**: Deploy only after complete testing
 
-## 🚀 Filosofía de Desarrollo Janome
+## 🚀 Development Philosophy
 
-- **SIMPLICIDAD** sobre complejidad
-- **FUNCIONALIDAD** sobre perfección
-- **AGILIDAD** sobre documentación excesiva
-- **WORKING CODE** sobre código elegante
-- **Tests SOLO** donde son críticos (worker)
-- **Contexto REAL**: Lee PRs recientes para entender el código actual
+- **SIMPLICITY** over complexity
+- **FUNCTIONALITY** over perfection
+- **AGILITY** over excessive documentation
+- **WORKING CODE** over elegant code
+- **Tests ONLY** where they are critical (backend/APIs)
+- **REAL CONTEXT**: Read recent PRs to understand current code
 
 ## 📝 Ejemplo de Uso
 
 ```bash
-# Issue simple de frontend
+# Simple frontend issue
 ./claude-issue-worker.sh 456 frontend
 
-# Issue complejo de base de datos
+# Complex database issue
 ./claude-issue-worker.sh 789 database
 
-# Bug en el worker
-./claude-issue-worker.sh 321 worker
+# Backend bug
+./claude-issue-worker.sh 321 backend
 ```
 
 ## 🚨 Troubleshooting
@@ -123,8 +123,8 @@ curl -sSL https://example.com/install-claude | bash
 
 **Error: Not in project root**
 ```bash
-# Navegar al directorio correcto
-cd /path/to/janome-agent-dashboard
+# Navigate to correct directory
+cd /path/to/your-project
 ./claude-issue-worker.sh 123
 ```
 
@@ -146,4 +146,4 @@ El script usa colores para facilitar la lectura:
 
 ---
 
-**Tip**: Este script está optimizado para el flujo de trabajo específico de Janome. Sigue el protocolo C.I.D.E.R. automáticamente y prioriza código simple y funcional sobre perfección teórica. Lee automáticamente CLAUDE.md y PRs recientes para mejor contexto.
+**Tip**: This script is optimized for structured development workflows. It automatically follows development best practices and prioritizes simple, functional code over theoretical perfection. It automatically reads project documentation and recent PRs for better context.

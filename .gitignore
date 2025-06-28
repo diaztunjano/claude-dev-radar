@@ -1,0 +1,9 @@
+.claude
+
+# Claude Development Files
+.claude/sessions/
+.claude-context.json
+analysis/
+
+
+node_modules/

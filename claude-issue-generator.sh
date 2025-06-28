@@ -38,10 +38,10 @@ log_generate() {
 
 # Display usage
 show_usage() {
-    echo "🎯 JANOME ISSUE GENERATOR - GitHub Integration"
+    echo "🎯 CLAUDE DEV RADAR - GitHub Issue Generator"
     echo "============================================="
     echo ""
-    echo "Creates atomic issues directly in GitHub following C.I.D.E.R. protocol"
+    echo "Creates atomic issues directly in GitHub following development best practices"
     echo ""
     echo "Usage: $0 <command> [options]"
     echo ""
@@ -55,21 +55,21 @@ show_usage() {
     echo "REQUIREMENTS:"
     echo "  📋 Claude Code installed and authenticated"
     echo "  🐙 GitHub CLI (gh) installed and authenticated: gh auth login"
-    echo "  📁 Run from Janome project root directory"
+    echo "  📁 Run from any git repository root directory"
     echo ""
     echo "GENERATE OPTIONS:"
-    echo "  epic: EPIC-TALLERES, EPIC-ASISTENTES, EPIC-EQUIPOS, EPIC-RECORDATORIOS,"
-    echo "        EPIC-USUARIOS, EPIC-IA-WHATSAPP, EPIC-DASHBOARD, EPIC-PERFORMANCE, EPIC-DOCS"
+    echo "  epic: EPIC-FRONTEND, EPIC-BACKEND, EPIC-API, EPIC-DATABASE,"
+    echo "        EPIC-TESTING, EPIC-DOCS, EPIC-DEPLOYMENT, EPIC-PERFORMANCE, EPIC-SECURITY"
     echo "  feature: Brief description of the feature"
     echo ""
     echo "VALIDATE OPTIONS:"
     echo "  input: GitHub issue number (e.g., 123) or local file path"
     echo ""
     echo "EXAMPLES:"
-    echo "  $0 analyze \"Implementar sistema de evaluaciones post-taller\""
-    echo "  $0 generate EPIC-TALLERES \"widget confirmacion asistencia\""
+    echo "  $0 analyze \"Implement user authentication system\""
+    echo "  $0 generate EPIC-FRONTEND \"responsive navigation component\""
     echo "  $0 validate 123  # Validates GitHub issue #123"
-    echo "  $0 validate specs/01_FEATURES/[FEAT]-nueva-funcionalidad.md"
+    echo "  $0 validate docs/features/new-feature.md"
     echo "  $0 list-epics"
     echo ""
     echo "WORKFLOW:"
@@ -105,114 +105,170 @@ check_github_cli() {
     log_success "GitHub CLI authenticated and ready"
 }
 
-# Validate we're in the correct directory
+# Validate we're in a git repository with .claude/ structure
 check_project_structure() {
-    if [[ ! -f "package.json" ]] || [[ ! -d "src" ]] || [[ ! -d "specs" ]]; then
-        log_error "Please run this script from the Janome project root directory"
-        log_info "Expected structure: package.json, src/, specs/"
+    if [[ ! -d ".git" ]]; then
+        log_error "Please run this script from a git repository root directory"
+        log_info "Initialize with: git init"
         exit 1
+    fi
+    
+    if [[ ! -d ".claude" ]]; then
+        log_error "No .claude/ structure found. Please initialize first."
+        log_info "Run: claude-setup init"
+        exit 1
+    fi
+    
+    # Check essential .claude/ files
+    if [[ ! -f ".claude/current/project-state.md" ]] || [[ ! -f ".claude/epics/epics-roadmap.md" ]]; then
+        log_warning ".claude/ structure incomplete, but proceeding..."
     fi
 }
 
-# List available epics
+# Read project context from .claude/ files
+read_claude_context() {
+    local project_state=""
+    local active_epic=""
+    local epics_roadmap=""
+    
+    if [[ -f ".claude/current/project-state.md" ]]; then
+        project_state=$(cat ".claude/current/project-state.md")
+    fi
+    
+    if [[ -f ".claude/current/active-epic.md" ]]; then
+        active_epic=$(cat ".claude/current/active-epic.md")
+    fi
+    
+    if [[ -f ".claude/epics/epics-roadmap.md" ]]; then
+        epics_roadmap=$(cat ".claude/epics/epics-roadmap.md")
+    fi
+    
+    # Export for use in Claude prompts
+    export CLAUDE_PROJECT_STATE="$project_state"
+    export CLAUDE_ACTIVE_EPIC="$active_epic"  
+    export CLAUDE_EPICS_ROADMAP="$epics_roadmap"
+}
+
+# List available epics from .claude/epics-roadmap.md if available, otherwise show defaults
 list_epics() {
-    log_epic "ÉPICAS DISPONIBLES EN JANOME"
+    if [[ -f ".claude/epics/epics-roadmap.md" ]]; then
+        log_epic "PROJECT EPICS (from .claude/epics/epics-roadmap.md)"
+        echo ""
+        
+        # Extract epics from roadmap file
+        grep -E "^\*\*EPIC-.*\*\*" ".claude/epics/epics-roadmap.md" | head -10 || {
+            log_warning "Could not read epics from roadmap file, showing defaults"
+            show_default_epics
+        }
+    else
+        show_default_epics
+    fi
+}
+
+# Show default epic structure
+show_default_epics() {
+    log_epic "AVAILABLE EPICS FOR SOFTWARE DEVELOPMENT"
     echo ""
-    echo "🎯 EPIC-TALLERES - Gestión de Talleres"
-    echo "   └── Programación, Confirmaciones, Estados, Reportes"
+    echo "🎯 EPIC-FRONTEND - User Interface Development"
+    echo "   └── Components, Layouts, Styles, Interactions"
     echo ""
-    echo "👥 EPIC-ASISTENTES - Gestión de Participantes"
-    echo "   └── Perfiles, Equipos, Inscripciones, Historial"
+    echo "🔧 EPIC-BACKEND - Server-side Development"
+    echo "   └── APIs, Services, Business Logic, Architecture"
     echo ""
-    echo "🔧 EPIC-EQUIPOS - Catálogo de Máquinas"
-    echo "   └── Catálogo, Tipos, Compatibilidad, Asignaciones"
+    echo "🗄️ EPIC-DATABASE - Data Management"
+    echo "   └── Schema, Migrations, Queries, Optimization"
     echo ""
-    echo "📱 EPIC-RECORDATORIOS - Sistema WhatsApp"
-    echo "   └── Cron Jobs, Templates, Estadísticas, Bulk"
+    echo "🔗 EPIC-API - API Development"
+    echo "   └── Endpoints, Documentation, Versioning, Integration"
     echo ""
-    echo "👤 EPIC-USUARIOS - Autenticación y Roles"
-    echo "   └── Auth, Roles, Estados, Aprobaciones"
+    echo "🧪 EPIC-TESTING - Quality Assurance"
+    echo "   └── Unit Tests, Integration Tests, E2E, Coverage"
     echo ""
-    echo "🤖 EPIC-IA-WHATSAPP - Integración IA"
-    echo "   └── Chatbot, Escalamiento, Contexto, Análisis"
+    echo "🚀 EPIC-DEPLOYMENT - DevOps & Infrastructure"
+    echo "   └── CI/CD, Containerization, Monitoring, Scaling"
     echo ""
-    echo "📊 EPIC-DASHBOARD - Métricas y Reportes"
-    echo "   └── Widgets, Gráficos, Exportes, Alertas"
+    echo "📊 EPIC-PERFORMANCE - Optimization"
+    echo "   └── Speed, Memory, Bundle Size, Caching"
     echo ""
-    echo "🔧 EPIC-PERFORMANCE - Optimizaciones"
-    echo "   └── BD, Frontend, Worker, Monitoring"
+    echo "🔒 EPIC-SECURITY - Security Implementation"
+    echo "   └── Authentication, Authorization, Encryption, Auditing"
     echo ""
-    echo "🔧 EPIC-DOCS - Documentación"
-    echo "   └── Creación de documentos .md como bitácora del proyecto."
+    echo "📚 EPIC-DOCS - Documentation"
+    echo "   └── Code docs, User guides, API docs, Architecture"
 }
 
 # Analyze requirement and suggest structure
 analyze_requirement() {
     local requirement="$1"
 
-    log_info "Analizando requerimiento para estructura de issues..."
+    log_info "Analyzing requirement for issue structure..."
+    
+    # Read current .claude/ context
+    read_claude_context
 
-    claude "MODO: ANÁLISIS DE REQUERIMIENTO JANOME
+    claude "MODO: REQUIREMENT ANALYSIS WITH CLAUDE CONTEXT
 
-Analiza este requerimiento y propón la estructura de issues:
+Analyze this requirement and propose an issue structure:
 
-REQUERIMIENTO: $requirement
+REQUIREMENT: $requirement
 
-## CONTEXTO DEL PROYECTO JANOME
-Este es el Panel Administrativo Janome - un sistema de gestión de talleres, asistentes y equipos industriales.
-Stack: React + TypeScript + Vite + Supabase + Cloudflare Workers
-Protocolo: C.I.D.E.R. (Contextualizar, Iterar, Documentar, Ejecutar, Reflexionar)
+## CURRENT PROJECT CONTEXT
+Read the current project state from .claude/ files:
 
-Tienes acceso a la documentación completa en:
-- specs/00_SYSTEM/_MANIFEST.md (estado global)
-- specs/03_DATABASE/_DATABASE_OVERVIEW.md (funciones BD)
-- CLAUDE.md (contexto de desarrollo)
+### PROJECT STATE:
+$CLAUDE_PROJECT_STATE
 
-## ÉPICAS DISPONIBLES:
-🎯 EPIC-TALLERES - Gestión de Talleres
-👥 EPIC-ASISTENTES - Gestión de Participantes
-🔧 EPIC-EQUIPOS - Catálogo de Máquinas
-📱 EPIC-RECORDATORIOS - Sistema WhatsApp
-👤 EPIC-USUARIOS - Autenticación y Roles
-🤖 EPIC-IA-WHATSAPP - Integración IA
-📊 EPIC-DASHBOARD - Métricas y Reportes
-🔧 EPIC-PERFORMANCE - Optimizaciones
-🔧 EPIC-DOCS - Documentación
+### ACTIVE EPIC:
+$CLAUDE_ACTIVE_EPIC
 
-## TAREAS REQUERIDAS:
-1. 🎯 Identifica la ÉPICA principal (y secundarias si aplican)
-2. 📋 Desglosa en issues atómicas (cada una independiente)
-3. 🔗 Establece dependencias entre issues
-4. ⏱️ Estima complejidad: SIMPLE(15min-2h) | MEDIUM(2h-6h) | COMPLEX(6h-24h)
-5. 📅 Propón orden lógico de desarrollo
-6. ⚠️ Identifica riesgos o blockers potenciales
-7. 🏗️ Sugiere si requiere investigación previa o pruebas de concepto
+### EPICS ROADMAP:
+$CLAUDE_EPICS_ROADMAP
 
-## FORMATO DE SALIDA ESPERADO:
-### ÉPICA PRINCIPAL: [nombre]
-### ISSUES ATÓMICAS SUGERIDAS:
-1. [TIPO]-(fecha)-[nombre] - COMPLEJIDAD: [nivel] - AREA: [area]
-   Descripción: [qué hace específicamente]
-   Dependencias: [issues relacionadas]
+## DEVELOPMENT PROTOCOL: C.I.D.E.R.
+- **C**ontextualize: Understand current state and requirements
+- **I**terate: Plan and break down into manageable tasks  
+- **D**ocument: Record decisions and progress
+- **E**xecute: Implement with testing and validation
+- **R**eflect: Review outcomes and plan next steps
 
-2. [continuar...]
+## ANALYSIS TASKS:
+1. 🎯 Identify primary EPIC (and secondary if applicable)
+2. 📋 Break down into atomic issues (each independent)
+3. 🔗 Establish dependencies between issues
+4. ⏱️ Estimate complexity: SIMPLE(15min-2h) | MEDIUM(2h-6h) | COMPLEX(6h-24h)
+5. 📅 Propose logical development order
+6. ⚠️ Identify potential risks or blockers
+7. 🏗️ Suggest if prior research or proof-of-concept needed
 
-### ORDEN DE DESARROLLO:
-1. Issue #1 (prerequisito)
-2. Issue #2 (puede ir en paralelo)
+## EXPECTED OUTPUT FORMAT:
+### PRIMARY EPIC: [name]
+### SUGGESTED ATOMIC ISSUES:
+1. [TYPE]-(date)-[name] - COMPLEXITY: [level] - AREA: [area]
+   Description: [what it specifically does]
+   Dependencies: [related issues]
+
+2. [continue...]
+
+### DEVELOPMENT ORDER:
+1. Issue #1 (prerequisite)
+2. Issue #2 (can run in parallel)
 ...
 
-### RIESGOS IDENTIFICADOS:
-- [riesgo 1]: [mitigación sugerida]
-- [riesgo 2]: [mitigación sugerida]
+### IDENTIFIED RISKS:
+- [risk 1]: [suggested mitigation]
+- [risk 2]: [suggested mitigation]
 
-Sé específico y práctico. Cada issue debe ser implementable independientemente." \
+### RECOMMENDATIONS:
+- Based on current project state
+- Considering active epic context
+- Aligned with existing epics roadmap
+
+Be specific and practical. Each issue should be independently implementable." \
         --allowedTools "Read" "Write" \
         "Bash(gh:*)" "Bash(rg:*)" "Bash(find:*)" "Bash(ls:*)" "Bash(grep:*)" \
-        "Bash(npm:*)" "Bash(git:*)" "Bash(cd:*)" "Bash(npx:*)" \
-        "mcp_supabase_*" "fetch_pull_request"
+        "Bash(npm:*)" "Bash(git:*)" "Bash(cd:*)" "Bash(npx:*)"
 
-    log_success "Análisis completado. Revisa la propuesta y genera las issues específicas."
+    log_success "Analysis completed. Review the proposal and generate specific issues."
 }
 
 # Generate atomic issue and create it in GitHub via Claude Code
@@ -220,15 +276,18 @@ generate_issue() {
     local epic="$1"
     local feature="$2"
 
-    log_generate "Generando y creando issue atómica para $epic: $feature"
+    log_generate "Generating atomic issue for $epic: $feature"
+    
+    # Read current .claude/ context
+    read_claude_context
 
     # Validate epic
     case $epic in
-        EPIC-TALLERES|EPIC-ASISTENTES|EPIC-EQUIPOS|EPIC-RECORDATORIOS|EPIC-USUARIOS|EPIC-IA-WHATSAPP|EPIC-DASHBOARD|EPIC-PERFORMANCE|EPIC-DOCS)
+        EPIC-FRONTEND|EPIC-BACKEND|EPIC-DATABASE|EPIC-API|EPIC-TESTING|EPIC-DEPLOYMENT|EPIC-PERFORMANCE|EPIC-SECURITY|EPIC-DOCS)
             ;;
         *)
-            log_error "Épica no válida: $epic"
-            log_info "Usa: list-epics para ver épicas disponibles"
+            log_error "Invalid epic: $epic"
+            log_info "Use: list-epics to see available epics"
             exit 1
             ;;
     esac
@@ -236,24 +295,28 @@ generate_issue() {
     # Map epic to GitHub label
     local epic_label
     case $epic in
-        EPIC-TALLERES) epic_label="epic:talleres" ;;
-        EPIC-ASISTENTES) epic_label="epic:asistentes" ;;
-        EPIC-EQUIPOS) epic_label="epic:equipos" ;;
-        EPIC-RECORDATORIOS) epic_label="epic:recordatorios" ;;
-        EPIC-USUARIOS) epic_label="epic:usuarios" ;;
-        EPIC-IA-WHATSAPP) epic_label="epic:ia-whatsapp" ;;
-        EPIC-DASHBOARD) epic_label="epic:dashboard" ;;
+        EPIC-FRONTEND) epic_label="epic:frontend" ;;
+        EPIC-BACKEND) epic_label="epic:backend" ;;
+        EPIC-DATABASE) epic_label="epic:database" ;;
+        EPIC-API) epic_label="epic:api" ;;
+        EPIC-TESTING) epic_label="epic:testing" ;;
+        EPIC-DEPLOYMENT) epic_label="epic:deployment" ;;
         EPIC-PERFORMANCE) epic_label="epic:performance" ;;
+        EPIC-SECURITY) epic_label="epic:security" ;;
         EPIC-DOCS) epic_label="epic:docs" ;;
     esac
 
     # Determine suggested area automatically
     local suggested_area="frontend"
-    if echo "$feature" | grep -qi "worker\|cron\|whatsapp\|reminder"; then
-        suggested_area="worker"
-    elif echo "$feature" | grep -qi "database\|function\|migration\|table"; then
+    if echo "$feature" | grep -qi "server\|api\|service\|controller"; then
+        suggested_area="backend"
+    elif echo "$feature" | grep -qi "database\|migration\|schema\|query"; then
         suggested_area="database"
-    elif echo "$feature" | grep -qi "doc\|spec\|readme\|plan\|staging\|production\|deploy"; then
+    elif echo "$feature" | grep -qi "test\|spec\|coverage\|unit\|integration"; then
+        suggested_area="testing"
+    elif echo "$feature" | grep -qi "deploy\|ci\|cd\|docker\|kubernetes"; then
+        suggested_area="deployment"
+    elif echo "$feature" | grep -qi "doc\|readme\|guide\|manual"; then
         suggested_area="docs"
     fi
 
@@ -261,124 +324,133 @@ generate_issue() {
     local date=$(date +%d-%m-%Y)
     local title="[FEAT]-($date)-[...]"
 
-    log_info "Ejecutando Claude Code para generar y crear la issue..."
-    log_info "Título sugerido: $title"
-    log_info "Labels sugeridos: $epic_label"
-    log_info "Área sugerida: $suggested_area"
+    log_info "Executing Claude Code to generate and create issue..."
+    log_info "Suggested title: $title"
+    log_info "Suggested labels: $epic_label"
+    log_info "Suggested area: $suggested_area"
 
     # Execute Claude Code with direct GitHub issue creation
-    claude "MODO: GENERADOR DE ISSUE JANOME + CREACIÓN EN GITHUB
+    claude "MODE: CLAUDE ISSUE GENERATOR + GITHUB CREATION
 
-## CONFIGURACIÓN DE LA ISSUE
-ÉPICA: $epic
-FUNCIONALIDAD: $feature
-TÍTULO SUGERIDO: $title
-LABELS SUGERIDOS: $epic_label,ÁREA SUGERIDA: $suggested_area
+## ISSUE CONFIGURATION
+EPIC: $epic
+FUNCTIONALITY: $feature
+SUGGESTED TITLE: $title
+SUGGESTED LABELS: $epic_label
+SUGGESTED AREA: $suggested_area
 
-## TU TAREA COMPLETA:
-1. 📖 Lee OBLIGATORIAMENTE estos archivos para contextualizar:
-   - CLAUDE.md (reglas y protocolo de desarrollo)
-   - specs/00_SYSTEM/_MANIFEST.md (estado global del sistema)
-   - specs/03_DATABASE/_DATABASE_OVERVIEW.md (funciones BD disponibles)
+## CURRENT PROJECT CONTEXT
+Use the current project state from .claude/ files:
 
-2. 📝 Genera el contenido completo de la issue siguiendo protocolo C.I.D.E.R.:
+### PROJECT STATE:
+$CLAUDE_PROJECT_STATE
 
-## 🎯 **ÉPICA PADRE**: $epic
-## 🔧 **ÁREA DE TRABAJO**: $suggested_area (o ajusta según análisis)
-## ⏱️ **COMPLEJIDAD**: [SIMPLE|MEDIUM|COMPLEX] - [15min-2h|2h-6h|6h-24h]
+### ACTIVE EPIC:
+$CLAUDE_ACTIVE_EPIC
 
----
+### EPICS ROADMAP:
+$CLAUDE_EPICS_ROADMAP
 
-## 📋 **CONTEXTUALIZACIÓN (C.I.D.E.R.)**
+## YOUR COMPLETE TASK:
+1. 📖 Read project context from the above .claude/ files content
+2. 📝 Generate complete issue content following C.I.D.E.R. protocol:
 
-### **🎯 Objetivo de la Issue**
-[Descripción clara y específica de qué se va a implementar]
-
-### **🔗 Dependencias**
-- **Archivos críticos**: [Lista de archivos que se van a modificar]
-- **Funciones BD**: [Funciones de Supabase involucradas si aplica]
-- **Issues relacionadas**: [Si aplica]
-
-### **📊 Contexto de Negocio**
-- **Valor para el usuario**: [Cómo impacta la experiencia del usuario]
-- **Casos de uso**: [Escenarios específicos donde se usa]
+## 🎯 **PARENT EPIC**: $epic
+## 🔧 **WORK AREA**: $suggested_area (adjust based on analysis)
+## ⏱️ **COMPLEXITY**: [SIMPLE|MEDIUM|COMPLEX] - [15min-2h|2h-6h|6h-24h]
 
 ---
 
-## 🔄 **ITERACIÓN Y PLANIFICACIÓN (C.I.D.E.R.)**
+## 📋 **CONTEXTUALIZATION (C.I.D.E.R.)**
 
-### **📋 Análisis de Impacto**
-- [ ] **Frontend**: [Componentes que se van a modificar/crear]
-- [ ] **Backend/BD**: [Funciones/tablas que se van a modificar]
-- [ ] **Worker**: [Scripts o endpoints que se van a tocar]
-- [ ] **Documentación**: [Archivos de specs que se van a actualizar]
+### **🎯 Issue Objective**
+[Clear and specific description of what will be implemented]
 
-### **🎯 Definición de \"Terminado\"**
-- [ ] **Funcionalidad**: [Criterios específicos de funcionalidad]
-- [ ] **Testing**: [Qué se debe probar y cómo]
-- [ ] **Documentación**: [Qué documentos se deben actualizar]
-- [ ] **Build**: [npm run build exitoso + type-check]
+### **🔗 Dependencies**
+- **Critical files**: [List of files to be modified]
+- **Related issues**: [If applicable]
+- **Epic dependencies**: [Based on current active epic]
 
----
-
-## ⚡ **EJECUCIÓN TÉCNICA (C.I.D.E.R.)**
-
-### **🛠️ Plan de Implementación**
-
-#### **FASE 1: Preparación**
-- [ ] Leer specs relevantes
-- [ ] Verificar funciones BD con Supabase MCP (si aplica)
-- [ ] Confirmar estado del build: \`npm run build\`
-
-#### **FASE 2: Desarrollo**
-- [ ] **[Paso específico 1]**: [Descripción detallada]
-- [ ] **[Paso específico 2]**: [Descripción detallada]
-- [ ] **Testing incremental**: [Después de cada paso crítico]
-
-#### **FASE 3: Validación**
-- [ ] **Build check**: \`npm run build\` exitoso
-- [ ] **Type check**: \`npm run type-check\` sin errores
-- [ ] **Testing manual**: [Funcionalidad en browser si aplica]
+### **📊 Business Context**
+- **User value**: [How it impacts user experience]
+- **Use cases**: [Specific scenarios where it's used]
 
 ---
 
-## 🔍 **REFLEXIÓN Y VERIFICACIÓN (C.I.D.E.R.)**
+## 🔄 **ITERATION AND PLANNING (C.I.D.E.R.)**
 
-### **✅ Criterios de Aceptación**
-- [ ] **Funcional**: [La funcionalidad trabaja según especificación]
-- [ ] **Técnico**: [Build exitoso + tipos correctos]
-- [ ] **UX**: [Interfaz intuitiva y responsive si aplica]
+### **📋 Impact Analysis**
+- [ ] **Frontend**: [Components to be modified/created]
+- [ ] **Backend**: [Services/APIs to be modified]
+- [ ] **Database**: [Schema/queries to be modified]
+- [ ] **Documentation**: [.claude/ files to be updated]
 
-### **🚨 Consideraciones Críticas Janome**
-- **Timezone**: Todas las fechas en \`America/Santiago\` (si aplica)
-- **BD Functions**: Consultar estado real con Supabase MCP (si aplica)
-- **Worker**: Si se modifica, testing obligatorio
+### **🎯 Definition of \"Done\"**
+- [ ] **Functionality**: [Specific functionality criteria]
+- [ ] **Testing**: [What should be tested and how]
+- [ ] **Documentation**: [Which documents should be updated]
+- [ ] **Build**: [Successful build + type-check]
 
 ---
 
-## 📝 **Para Ejecutar Esta Issue**
+## ⚡ **TECHNICAL EXECUTION (C.I.D.E.R.)**
+
+### **🛠️ Implementation Plan**
+
+#### **PHASE 1: Preparation**
+- [ ] Read relevant .claude/ documentation
+- [ ] Verify current project state
+- [ ] Confirm build status
+
+#### **PHASE 2: Development**
+- [ ] **[Specific step 1]**: [Detailed description]
+- [ ] **[Specific step 2]**: [Detailed description]
+- [ ] **Incremental testing**: [After each critical step]
+
+#### **PHASE 3: Validation**
+- [ ] **Build check**: Successful build
+- [ ] **Type check**: No type errors
+- [ ] **Manual testing**: [Browser functionality if applicable]
+
+---
+
+## 🔍 **REFLECTION AND VERIFICATION (C.I.D.E.R.)**
+
+### **✅ Acceptance Criteria**
+- [ ] **Functional**: [Functionality works as specified]
+- [ ] **Technical**: [Successful build + correct types]
+- [ ] **UX**: [Intuitive and responsive interface if applicable]
+
+### **📝 Session Documentation**
+- [ ] Update .claude/current/active-epic.md with progress
+- [ ] Update session file with changes made
+- [ ] Plan next steps in .claude/current/next-session.md
+
+---
+
+## 📝 **To Execute This Issue**
 \`\`\`bash
-./claude-issue-worker.sh [NUMERO-ISSUE] $suggested_area
+claude-cider work [ISSUE-NUMBER] $suggested_area
 \`\`\`
 
-3. 🚀 CREAR LA ISSUE EN GITHUB:
-   Usa la herramienta gh para crear la issue con:
-   - Título: $title
-   - Contenido: el body generado arriba
+3. 🚀 CREATE ISSUE IN GITHUB:
+   Use gh tool to create the issue with:
+   - Title: $title
+   - Content: the body generated above
    - Labels: $epic_label
-   - Asignado a: @me
+   - Assigned to: @me
 
-4. 📊 REPORTAR ÉXITO:
-   Al final, reporta el número de issue creada y el comando para ejecutarla.
+4. 📊 REPORT SUCCESS:
+   At the end, report the created issue number and command to execute it.
 
-INSTRUCCIONES ESPECÍFICAS:
-- Estima complejidad realista basada en la funcionalidad
-- Identifica archivos exactos que se van a modificar
-- Consulta funciones BD reales si es relevante
-- Sé específico en criterios de aceptación
-- Incluye consideraciones del timezone America/Santiago cuando corresponda
+SPECIFIC INSTRUCTIONS:
+- Estimate realistic complexity based on functionality
+- Identify exact files that will be modified
+- Be specific in acceptance criteria
+- Consider current project context from .claude/ files
+- Align with active epic and roadmap
 
-¡Procede a generar y crear la issue!" \
+Generate and create the issue!" \
         --allowedTools "Read" "Write" \
         "Bash(gh:*)" "Bash(rg:*)" "Bash(find:*)" "Bash(ls:*)" "Bash(grep:*)" \
         "Bash(npm:*)" "Bash(git:*)" "Bash(cd:*)" "Bash(npx:*)" \
@@ -493,50 +565,52 @@ Lee el contenido completo y provee feedback constructivo." \
 # Generate empty template
 generate_template() {
     local date=$(date +%d-%m-%Y)
-    local template_file="specs/01_FEATURES/[FEAT]-($date)-nueva-funcionalidad.md"
+    local template_file=".claude/templates/issue-template-custom.md"
 
-    log_generate "Generando template vacío en: $template_file"
+    log_generate "Generating empty template at: $template_file"
+    
+    # Ensure templates directory exists
+    mkdir -p ".claude/templates"
 
     cat > "$template_file" << 'EOF'
-# [FEAT]-(DD-MM-YYYY)-[NOMBRE-FUNCIONALIDAD]
+# [FEAT]-(DD-MM-YYYY)-[FEATURE-NAME]
 
-## 🎯 **ÉPICA PADRE**: [EPIC-NOMBRE]
-## 🔧 **ÁREA DE TRABAJO**: [frontend|worker|database|docs|full-stack]
-## ⏱️ **COMPLEJIDAD**: [SIMPLE|MEDIUM|COMPLEX] - [15min-2h|2h-6h|6h-24h]
-
----
-
-## 📋 **CONTEXTUALIZACIÓN (C.I.D.E.R.)**
-
-### **🎯 Objetivo de la Issue**
-[Descripción clara y específica de qué se va a implementar]
-
-### **🔗 Dependencias**
-- **Archivos críticos**: [Lista de archivos que se van a modificar]
-- **Funciones BD**: [Funciones de Supabase involucradas]
-- **Issues relacionadas**: #[numero] #[numero]
-- **Épicas dependientes**: [Si aplica]
-
-### **📊 Contexto de Negocio**
-- **Valor para el usuario**: [Cómo impacta la experiencia del usuario]
-- **Casos de uso**: [Escenarios específicos donde se usa]
-- **Métricas de éxito**: [Cómo medir que funciona correctamente]
+## 🎯 **PARENT EPIC**: [EPIC-NAME]
+## 🔧 **WORK AREA**: [frontend|backend|database|docs|full-stack]
+## ⏱️ **COMPLEXITY**: [SIMPLE|MEDIUM|COMPLEX] - [15min-2h|2h-6h|6h-24h]
 
 ---
 
-## 🔄 **ITERACIÓN Y PLANIFICACIÓN (C.I.D.E.R.)**
+## 📋 **CONTEXTUALIZATION (C.I.D.E.R.)**
 
-### **📋 Análisis de Impacto**
-- [ ] **Frontend**: [Componentes que se van a modificar/crear]
-- [ ] **Backend/BD**: [Funciones/tablas que se van a modificar]
-- [ ] **Worker**: [Scripts o endpoints que se van a tocar]
-- [ ] **Documentación**: [Archivos de specs que se van a actualizar]
+### **🎯 Issue Objective**
+[Clear and specific description of what will be implemented]
 
-### **🎯 Definición de "Terminado"**
-- [ ] **Funcionalidad**: [Criterios específicos de funcionalidad]
-- [ ] **Testing**: [Qué se debe probar y cómo]
-- [ ] **Documentación**: [Qué documentos se deben actualizar]
-- [ ] **Build**: [npm run build exitoso + type-check]
+### **🔗 Dependencies**
+- **Critical files**: [List of files to be modified]
+- **Related issues**: #[number] #[number]
+- **Epic dependencies**: [If applicable]
+
+### **📊 Business Context**
+- **User value**: [How it impacts user experience]
+- **Use cases**: [Specific scenarios where it's used]
+- **Success metrics**: [How to measure it works correctly]
+
+---
+
+## 🔄 **ITERATION AND PLANNING (C.I.D.E.R.)**
+
+### **📋 Impact Analysis**
+- [ ] **Frontend**: [Components to be modified/created]
+- [ ] **Backend**: [Services/APIs to be modified]
+- [ ] **Database**: [Schema/queries to be modified]
+- [ ] **Documentation**: [.claude/ files to be updated]
+
+### **🎯 Definition of "Done"**
+- [ ] **Functionality**: [Specific functionality criteria]
+- [ ] **Testing**: [What should be tested and how]
+- [ ] **Documentation**: [Which documents should be updated]
+- [ ] **Build**: [Successful build + type-check]
 
 ---
 

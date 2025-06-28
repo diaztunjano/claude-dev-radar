@@ -42,7 +42,7 @@ show_usage() {
     echo "=================================================="
     echo ""
     echo "Deep analysis of unknown repositories using R.A.D.A.R. methodology:"
-    echo "🔍 Reconocer - 🧐 Analizar - 📝 Documentar - 🏗️ Arquitecturar - 📊 Reportar"
+    echo "🔍 Recognize - 🧐 Analyze - 📝 Document - 🏗️ Architect - 📊 Report"
     echo ""
     echo "Usage: $0 <command> [repo-path]"
     echo ""
@@ -117,6 +117,68 @@ setup_analysis_directories() {
     mkdir -p "$analysis_dir"/{architecture,onboarding,reports,data-models,workflows}
 
     log_success "Analysis directories created in: $analysis_dir"
+}
+
+# Check if .claude/ structure exists and update if possible
+update_claude_context() {
+    local repo_path="${1:-.}"
+    local analysis_summary="$2"
+    local detected_tech="$3"
+    
+    if [[ -d "$repo_path/.claude" ]]; then
+        log_info "Updating .claude/ structure with analysis results..."
+        
+        # Update project state with analysis findings
+        if [[ -f "$repo_path/.claude/current/project-state.md" ]]; then
+            local temp_file=$(mktemp)
+            local date=$(date +%Y-%m-%d)
+            
+            # Add analysis summary to project state
+            cat "$repo_path/.claude/current/project-state.md" > "$temp_file"
+            echo "" >> "$temp_file"
+            echo "## Analysis Results (Updated $date)" >> "$temp_file"
+            echo "$analysis_summary" >> "$temp_file"
+            echo "" >> "$temp_file"
+            echo "## Technology Stack Detected" >> "$temp_file"
+            echo "$detected_tech" >> "$temp_file"
+            
+            mv "$temp_file" "$repo_path/.claude/current/project-state.md"
+            log_success "Updated .claude/current/project-state.md with analysis"
+        fi
+        
+        # Update next session with analysis-based recommendations
+        if [[ -f "$repo_path/.claude/current/next-session.md" ]]; then
+            local temp_file=$(mktemp)
+            cat > "$temp_file" << EOF
+# Next Session Plan (Updated with R.A.D.A.R. Analysis)
+
+## Session Objectives (Based on Analysis)
+- [ ] Review R.A.D.A.R. analysis results in analysis/ directory
+- [ ] Choose appropriate epic based on detected technology stack
+- [ ] Set up development environment according to analysis findings
+- [ ] Generate first issues aligned with project architecture
+
+## Analysis Findings
+$analysis_summary
+
+## Recommended Next Steps
+- Review analysis/reports/ for comprehensive project overview
+- Check analysis/onboarding/ for setup instructions
+- Consider architecture insights from analysis/architecture/
+- Plan development approach based on detected patterns
+
+## Preparation Checklist
+- [ ] Read analysis reports
+- [ ] Understand project architecture
+- [ ] Review technology stack requirements
+- [ ] Plan epic priorities based on analysis
+EOF
+            mv "$temp_file" "$repo_path/.claude/current/next-session.md"
+            log_success "Updated .claude/current/next-session.md with analysis-based plan"
+        fi
+    else
+        log_info ".claude/ structure not found - analysis results saved to analysis/ directory only"
+    fi
 }
 
 # Phase 1: Reconocer - Identify structure and purpose
@@ -744,6 +806,14 @@ Sintetiza todo el análisis en un reporte ejecutivo con recomendaciones accionab
         "sequential-thinking"
 
     log_success "Fase 5 (Reportar) completada"
+    
+    # Update .claude/ structure if available
+    if [[ -f "$repo_path/analysis/reports/"*"executive-summary.md" ]]; then
+        local latest_report=$(ls -t "$repo_path/analysis/reports/"*"executive-summary.md" | head -1)
+        local summary=$(head -20 "$latest_report" | grep -v "^#" | tr '\n' ' ')
+        local tech_summary="Analysis completed - detailed results in analysis/ directory"
+        update_claude_context "$repo_path" "$summary" "$tech_summary"
+    fi
 }
 
 # Full R.A.D.A.R. analysis
@@ -771,6 +841,14 @@ full_analysis() {
     find "$repo_path/analysis" -type f -name "*.md" 2>/dev/null | sort | while read -r file; do
         log_success "📄 $file"
     done
+    
+    # Final update to .claude/ structure with complete analysis
+    if [[ -d "$repo_path/.claude" ]]; then
+        log_info "Updating .claude/ structure with complete R.A.D.A.R. analysis..."
+        local analysis_summary="Complete R.A.D.A.R. analysis completed. Review analysis/ directory for comprehensive project insights, architecture documentation, and development recommendations."
+        local tech_summary="Full technology stack analysis available in analysis/reports/"
+        update_claude_context "$repo_path" "$analysis_summary" "$tech_summary"
+    fi
 }
 
 # Main script logic

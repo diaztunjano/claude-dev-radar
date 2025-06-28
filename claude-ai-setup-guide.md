@@ -1,32 +1,32 @@
-# 🚀 Claude AI Setup - Guía Completa de Implementación
+# 🚀 Claude AI Setup - Complete Implementation Guide
 
-## 📋 Tabla de Contenidos
-1. [Visión General](#visión-general)
-2. [Arquitectura de la Solución](#arquitectura-de-la-solución)
-3. [Opción 1: Script Bash Universal](#opción-1-script-bash-universal)
-4. [Opción 2: Paquete NPM Global](#opción-2-paquete-npm-global)
-5. [Opción 3: CLI con Go](#opción-3-cli-con-go)
-6. [Integración con Claude](#integración-con-claude)
-7. [Mejores Prácticas](#mejores-prácticas)
-8. [Roadmap y Extensiones](#roadmap-y-extensiones)
+## 📋 Table of Contents
+1. [Overview](#overview)
+2. [Solution Architecture](#solution-architecture)
+3. [Option 1: Universal Bash Script](#option-1-universal-bash-script)
+4. [Option 2: Global NPM Package](#option-2-global-npm-package)
+5. [Option 3: Go CLI](#option-3-go-cli)
+6. [Claude Integration](#claude-integration)
+7. [Best Practices](#best-practices)
+8. [Roadmap and Extensions](#roadmap-and-extensions)
 
 ---
 
-## 🎯 Visión General
+## 🎯 Overview
 
-### Objetivo
-Crear un comando reutilizable que:
-1. Configure automáticamente la estructura `.claude/` en cualquier repositorio
-2. Genere archivos de documentación con templates inteligentes
-3. Se integre perfectamente con el workflow de Claude AI
-4. Sea fácil de instalar y mantener
+### Objective
+Create a reusable command that:
+1. Automatically configures `.claude/` structure in any repository
+2. Generates documentation files with intelligent templates
+3. Integrates seamlessly with Claude AI workflow
+4. Is easy to install and maintain
 
-### Requisitos Clave
-- ✅ **Simple**: Un solo comando para configurar todo
-- ✅ **Portable**: Funciona en cualquier OS (Mac, Linux, Windows)
-- ✅ **Personalizable**: Templates adaptables por proyecto
-- ✅ **Mantenible**: Código limpio y bien documentado
-- ✅ **Versionado**: Compatible con actualizaciones futuras
+### Key Requirements
+- ✅ **Simple**: Single command to configure everything
+- ✅ **Portable**: Works on any OS (Mac, Linux, Windows)
+- ✅ **Customizable**: Adaptable templates per project
+- ✅ **Maintainable**: Clean and well-documented code
+- ✅ **Versioned**: Compatible with future updates
 
 ---
 
