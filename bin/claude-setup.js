@@ -597,22 +597,6 @@ async function setupProject() {
     },
     {
       type: 'confirm',
-      name: 'runAnalysis',
-      message: 'Run initial R.A.D.A.R. analysis?',
-      default: true
-    },
-    {
-      type: 'list',
-      name: 'analysisType',
-      message: 'Analysis type:',
-      choices: [
-        { name: '⚡ Quick (5 min) - Basic overview', value: 'quick' },
-        { name: '🎯 Full (15 min) - Complete analysis', value: 'full' }
-      ],
-      when: (answers) => answers.runAnalysis
-    },
-    {
-      type: 'confirm',
       name: 'setupGitignore',
       message: 'Add Claude development files to .gitignore?',
       default: true
@@ -645,25 +629,6 @@ async function setupProject() {
     }
   }
 
-  // Run analysis if requested
-  if (answers.runAnalysis) {
-    console.log(chalk.yellow('ℹ️  Analysis functionality integrated into slash commands'));
-    console.log(chalk.cyan('💡 Use /radar:analyze or /radar:quick in Claude IDE'));
-    console.log(chalk.gray('   This provides better integration and user experience'));
-    
-    // Skip analysis during setup - user will do it in Claude IDE
-    debugLog('Analysis skipped - will be done via slash commands');
-
-    // Show .claude/ structure created (important UX feedback)
-    if (fs.existsSync('./.claude')) {
-      console.log(chalk.cyan('\n📁 Created .claude/ structure:'));
-      console.log(chalk.green('  ✅ .claude/current/ - Active project state'));
-      console.log(chalk.green('  ✅ .claude/epics/ - Epic management'));
-      console.log(chalk.green('  ✅ .claude/sessions/ - Session history'));
-      console.log(chalk.green('  ✅ .claude/guides/ - Development methodology'));
-      console.log(chalk.green('  ✅ .claude/templates/ - Reusable templates'));
-    }
-  }
 
   console.log(chalk.green.bold('\n🎉 PROJECT SETUP COMPLETE!'));
   console.log(chalk.cyan('\n📁 Created structure:'));

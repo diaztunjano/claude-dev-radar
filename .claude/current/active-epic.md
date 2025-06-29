@@ -18,13 +18,9 @@ This file will be updated with:
 - Next steps
 
 ## Commands to Get Started
-```bash
-# List available epics
-claude-cider list-epics
-
-# Generate issue for chosen epic
-claude-cider generate EPIC-NAME "issue description"
-
-# Work on generated issue
-claude-cider work <issue-number> <scope>
+Open Claude IDE and use:
+```
+/cider:list-epics
+/cider:generate EPIC-NAME "issue description"
+/cider:work ISSUE_NUMBER
 ```
