@@ -1,29 +1,33 @@
 {
   "name": "claude-dev-radar",
-  "version": "1.0.0",
-  "description": "AI-powered development tools: R.A.D.A.R. repository analysis + C.I.D.E.R. atomic issues system for Claude Code",
-  "main": "index.js",
+  "version": "1.1.0",
+  "description": "🤖 Claudio: AI-powered development assistant with R.A.D.A.R. analysis + C.I.D.E.R. atomic issues for Claude IDE",
+  "main": "bin/claudio.js",
   "bin": {
-    "claude-radar": "./bin/claude-radar.js",
-    "claude-cider": "./bin/claude-cider.js",
-    "claude-setup": "./bin/claude-setup.js"
+    "claudio": "./bin/claudio.js"
   },
   "scripts": {
+    "dev": "npm link && echo '🚀 Development mode ready! Use: claudio'",
+    "dev-unlink": "npm unlink -g claude-dev-radar",
     "install-global": "npm install -g .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node bin/claudio.js --help && echo '✅ Claudio help OK'",
+    "test:init": "node bin/claudio.js init --help && echo '✅ Init command OK'",
+    "test:full": "echo '🧪 Running full test...' && node bin/claudio.js status && echo '✅ Full test completed'"
   },
   "keywords": [
+    "claudio",
     "claude",
     "ai",
     "development",
+    "assistant",
     "automation",
-    "repository-analysis",
+    "analysis",
     "radar",
     "cider",
-    "freelance",
-    "productivity"
+    "productivity",
+    "freelance"
   ],
-  "author": "AI Developer Tools",
+  "author": "Claudio AI Assistant",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"

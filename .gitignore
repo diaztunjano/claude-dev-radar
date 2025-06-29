@@ -1,0 +1,10 @@
+# Claude Development Files
+.claude/sessions/
+.claude-context.json
+analysis/
+
+# Keep slash commands in version control
+!.claude/commands/
+
+
+node_modules/
