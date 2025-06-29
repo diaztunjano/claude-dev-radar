@@ -44,7 +44,7 @@ function createGitignoreEntry() {
 function detectProjectType() {
   const files = fs.readdirSync('./');
   const packageJson = fs.existsSync('./package.json') ? JSON.parse(fs.readFileSync('./package.json', 'utf8')) : null;
-  
+
   // Detect technology stack
   const tech = {
     frontend: false,
@@ -76,16 +76,19 @@ function detectProjectType() {
 
 function createClaudeStructure() {
   const spinner = ora('Creating .claude/ structure...').start();
-  
+
   try {
     // Create directory structure
     const dirs = [
       '.claude',
       '.claude/current',
-      '.claude/epics', 
+      '.claude/epics',
       '.claude/sessions',
       '.claude/guides',
-      '.claude/templates'
+      '.claude/templates',
+      '.claude/commands',
+      '.claude/commands/radar',
+      '.claude/commands/cider'
     ];
 
     dirs.forEach(dir => {
@@ -105,7 +108,7 @@ function createClaudeStructure() {
       fs.mkdirSync(sessionsDir, { recursive: true });
     }
 
-    // Generate suggested epics based on detected technology
+        // Generate suggested epics based on detected technology
     const suggestedEpics = [];
     if (projectTech.frontend) suggestedEpics.push('EPIC-FRONTEND: User Interface Development');
     if (projectTech.backend) suggestedEpics.push('EPIC-BACKEND: Server-side Development');
@@ -113,7 +116,7 @@ function createClaudeStructure() {
     if (projectTech.api) suggestedEpics.push('EPIC-API: API Development');
     if (projectTech.testing) suggestedEpics.push('EPIC-TESTING: Quality Assurance');
     if (projectTech.deployment) suggestedEpics.push('EPIC-DEPLOYMENT: DevOps & Infrastructure');
-    
+
     // Always include these
     suggestedEpics.push('EPIC-PERFORMANCE: Optimization');
     suggestedEpics.push('EPIC-SECURITY: Security Implementation');
@@ -121,7 +124,10 @@ function createClaudeStructure() {
 
     // Create initial files
     createInitialClaudeFiles(suggestedEpics, projectTech);
-    
+
+    // Copy slash command templates
+    copySlashCommandTemplates(projectTech);
+
     spinner.succeed('.claude/ structure created ✅');
     return true;
   } catch (error) {
@@ -129,6 +135,80 @@ function createClaudeStructure() {
     console.error(chalk.red(error.message));
     return false;
   }
+}
+
+function copySlashCommandTemplates(projectTech) {
+  debugLog('Copying slash command templates', { projectTech });
+
+  try {
+    // Get the directory where this package is installed
+    const packageDir = path.dirname(path.dirname(__filename));
+    const templatesDir = path.join(packageDir, 'templates', 'commands');
+
+    debugLog('Templates directory', { templatesDir, exists: fs.existsSync(templatesDir) });
+
+    if (!fs.existsSync(templatesDir)) {
+      console.log(chalk.yellow('⚠️ Templates directory not found, skipping slash commands'));
+      return;
+    }
+
+    // Define template files to copy
+    const templateFiles = [
+      { src: 'setup.template.md', dest: '.claude/commands/setup.md' },
+      { src: 'radar/analyze.template.md', dest: '.claude/commands/radar/analyze.md' },
+      { src: 'radar/quick.template.md', dest: '.claude/commands/radar/quick.md' },
+      { src: 'cider/generate.template.md', dest: '.claude/commands/cider/generate.md' },
+      { src: 'cider/work.template.md', dest: '.claude/commands/cider/work.md' },
+      { src: 'cider/status.template.md', dest: '.claude/commands/cider/status.md' },
+      { src: 'cider/list-epics.template.md', dest: '.claude/commands/cider/list-epics.md' }
+    ];
+
+    templateFiles.forEach(({ src, dest }) => {
+      const srcPath = path.join(templatesDir, src);
+      const destPath = dest;
+
+      if (fs.existsSync(srcPath)) {
+        let content = fs.readFileSync(srcPath, 'utf8');
+
+        // Basic template variable replacement
+        const projectName = path.basename(process.cwd());
+        const packageJson = fs.existsSync('./package.json') ? JSON.parse(fs.readFileSync('./package.json', 'utf8')) : {};
+
+        content = content
+          .replace(/\{\{PROJECT_NAME\}\}/g, projectName)
+          .replace(/\{\{FRAMEWORK\}\}/g, detectFramework(packageJson) || 'Unknown')
+          .replace(/\{\{VERSION\}\}/g, packageJson.version || '1.0.0')
+          .replace(/\{\{PACKAGE_MANAGER\}\}/g, fs.existsSync('./package-lock.json') ? 'npm' : fs.existsSync('./yarn.lock') ? 'yarn' : 'npm');
+
+        fs.writeFileSync(destPath, content);
+        debugLog(`Copied template: ${src} -> ${dest}`);
+      } else {
+        debugLog(`Template not found: ${srcPath}`);
+      }
+    });
+
+    console.log(chalk.green('✅ Slash commands created and ready to use'));
+
+  } catch (error) {
+    debugLog('Error copying slash command templates', { error: error.message });
+    console.log(chalk.yellow('⚠️ Could not copy slash command templates'));
+  }
+}
+
+function detectFramework(packageJson) {
+  if (!packageJson || !packageJson.dependencies) return null;
+
+  const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+
+  if (deps.react) return 'React';
+  if (deps.vue) return 'Vue';
+  if (deps.angular) return 'Angular';
+  if (deps.svelte) return 'Svelte';
+  if (deps.express) return 'Express';
+  if (deps.fastify) return 'Fastify';
+  if (deps.nestjs) return 'NestJS';
+
+  return 'Node.js';
 }
 
 function createInitialClaudeFiles(suggestedEpics, projectTech) {
@@ -241,15 +321,11 @@ This file will be updated with:
 - Next steps
 
 ## Commands to Get Started
-\`\`\`bash
-# List available epics
-claude-cider list-epics
-
-# Generate issue for chosen epic
-claude-cider generate EPIC-NAME "issue description"
-
-# Work on generated issue
-claude-cider work <issue-number> <scope>
+Open Claude IDE and use:
+\`\`\`
+/cider:list-epics
+/cider:generate EPIC-NAME "issue description"
+/cider:work ISSUE_NUMBER
 \`\`\`
 `;
 
@@ -484,7 +560,7 @@ Every development session follows this protocol:
 - **Always update** after significant changes:
   - \`.claude/current/project-state.md\`
   - \`.claude/current/active-epic.md\`
-  
+
 - **Create new** for each session:
   - \`.claude/sessions/YYYY-MM/YYYYMMDD_HHMM_description.md\`
 
@@ -571,102 +647,48 @@ async function setupProject() {
 
   // Run analysis if requested
   if (answers.runAnalysis) {
-    const packageDir = path.dirname(path.dirname(__filename));
-    const scriptPath = path.join(packageDir, '.sh');
+    console.log(chalk.yellow('ℹ️  Analysis functionality integrated into slash commands'));
+    console.log(chalk.cyan('💡 Use /radar:analyze or /radar:quick in Claude IDE'));
+    console.log(chalk.gray('   This provides better integration and user experience'));
     
-    debugLog('Analysis requested', { analysisType: answers.analysisType, scriptPath });
+    // Skip analysis during setup - user will do it in Claude IDE
+    debugLog('Analysis skipped - will be done via slash commands');
 
-    // Validate script exists
-    if (!fs.existsSync(scriptPath)) {
-      console.log(chalk.red(`❌ Analysis script not found at: ${scriptPath}`));
-      console.log(chalk.yellow('💡 You can run analysis later with: claude-radar analyze'));
-      return;
-    }
-    
-    const spinner = ora(`Running ${answers.analysisType} analysis...`).start();
-    let progressInterval;
-    
-    // Show progress updates every 10 seconds
-    let elapsed = 0;
-    progressInterval = setInterval(() => {
-      elapsed += 10;
-      spinner.text = `Running ${answers.analysisType} analysis... (${elapsed}s elapsed)`;
-      debugLog(`Analysis progress: ${elapsed}s elapsed`);
-    }, 10000);
-
-    try {
-      const command = answers.analysisType === 'quick'
-        ? `bash "${scriptPath}" discover && bash "${scriptPath}" report`
-        : `bash "${scriptPath}" analyze`;
-      
-      debugLog('Executing analysis command', { command, cwd: process.cwd() });
-
-      execSync(command, { 
-        stdio: 'pipe', 
-        cwd: process.cwd(),
-        timeout: 900000 // 15 minutes timeout
-      });
-      
-      clearInterval(progressInterval);
-      debugLog('Analysis completed successfully');
-      spinner.succeed(`${answers.analysisType} analysis completed ✅`);
-
-      // Show generated files
-      if (fs.existsSync('./analysis')) {
-        console.log(chalk.cyan('\n📄 Generated analysis files:'));
-        const files = execSync('find ./analysis -name "*.md" | sort', { encoding: 'utf8' }).split('\n').filter(Boolean);
-        files.forEach(file => console.log(chalk.green(`  ✅ ${file}`)));
-      }
-      
-      // Show .claude/ structure if created
-      if (fs.existsSync('./.claude')) {
-        console.log(chalk.cyan('\n📁 Created .claude/ structure:'));
-        console.log(chalk.green('  ✅ .claude/current/ - Active project state'));
-        console.log(chalk.green('  ✅ .claude/epics/ - Epic management'));
-        console.log(chalk.green('  ✅ .claude/sessions/ - Session history'));
-        console.log(chalk.green('  ✅ .claude/guides/ - Development methodology'));
-        console.log(chalk.green('  ✅ .claude/templates/ - Reusable templates'));
-      }
-
-    } catch (error) {
-      clearInterval(progressInterval);
-      spinner.fail('Analysis failed ❌');
-      
-      debugLog('Analysis failed', {
-        error: error.message,
-        code: error.status,
-        signal: error.signal,
-        stdout: error.stdout,
-        stderr: error.stderr
-      });
-      
-      // Provide helpful error messages
-      if (error.signal === 'SIGTERM' || error.code === null) {
-        console.log(chalk.red('❌ Analysis timed out after 15 minutes'));
-        console.log(chalk.yellow('💡 Try: claude-radar quick (faster analysis)'));
-      } else if (error.message.includes('ENOENT')) {
-        console.log(chalk.red('❌ Analysis script not found'));
-        console.log(chalk.yellow(`💡 Expected script at: ${scriptPath}`));
-      } else {
-        console.log(chalk.red(`❌ Analysis error: ${error.message}`));
-        if (error.stderr) {
-          console.log(chalk.red('Error details:'));
-          console.log(chalk.gray(error.stderr));
-        }
-      }
-      
-      console.log(chalk.yellow('💡 You can run analysis later with: claude-radar analyze'));
-      console.log(chalk.gray('🐛 For debugging, run with: CLAUDE_SETUP_DEBUG=true claude-setup init'));
+    // Show .claude/ structure created (important UX feedback)
+    if (fs.existsSync('./.claude')) {
+      console.log(chalk.cyan('\n📁 Created .claude/ structure:'));
+      console.log(chalk.green('  ✅ .claude/current/ - Active project state'));
+      console.log(chalk.green('  ✅ .claude/epics/ - Epic management'));
+      console.log(chalk.green('  ✅ .claude/sessions/ - Session history'));
+      console.log(chalk.green('  ✅ .claude/guides/ - Development methodology'));
+      console.log(chalk.green('  ✅ .claude/templates/ - Reusable templates'));
     }
   }
 
   console.log(chalk.green.bold('\n🎉 PROJECT SETUP COMPLETE!'));
+  console.log(chalk.cyan('\n📁 Created structure:'));
+  console.log(chalk.white('  ✅ .claude/current/ - Project state tracking'));
+  console.log(chalk.white('  ✅ .claude/epics/ - Epic management'));
+  console.log(chalk.white('  ✅ .claude/commands/ - Native slash commands'));
+  console.log(chalk.white('  ✅ .claude/sessions/ - Session history'));
+  console.log(chalk.white('  ✅ .claude/guides/ - Development methodology'));
+
   console.log(chalk.cyan('\n🚀 Next steps:'));
-  console.log(chalk.white('  1. Review .claude/current/project-state.md'));
-  console.log(chalk.white('  2. Check .claude/epics/epics-roadmap.md'));
-  console.log(chalk.white('  3. Generate issues: claude-cider generate EPIC "description"'));
-  console.log(chalk.white('  4. Start working: claude-cider work <issue-number> <scope>'));
-  console.log(chalk.white('\n📚 Full commands: claude-radar --help, claude-cider --help'));
+  console.log(chalk.white('  1. Open Claude Code: claude'));
+  console.log(chalk.white('  2. Initialize project: /setup'));
+  console.log(chalk.white('  3. Run analysis: /radar:analyze'));
+  console.log(chalk.white('  4. Generate issues: /cider:generate EPIC-DOCS "improve README"'));
+
+  console.log(chalk.cyan('\n📚 Available slash commands:'));
+  console.log(chalk.white('  /setup - Project initialization'));
+  console.log(chalk.white('  /radar:analyze - Full project analysis'));
+  console.log(chalk.white('  /radar:quick - Quick project overview'));
+  console.log(chalk.white('  /cider:generate - Create atomic issues'));
+  console.log(chalk.white('  /cider:work - Work on specific issue'));
+  console.log(chalk.white('  /cider:status - Project status overview'));
+  console.log(chalk.white('  /cider:list-epics - Show available epics'));
+
+  console.log(chalk.yellow('\n💡 Pro tip: Open Claude Code and run /setup to get started!'));
 }
 
 async function quickStart() {
@@ -687,9 +709,10 @@ async function quickStart() {
     spinner.succeed('Quick setup completed ✅');
 
     console.log(chalk.green('\n⚡ Ready to go! Try:'));
-    console.log(chalk.white('  claude-radar quick     # Quick analysis'));
-    console.log(chalk.white('  claude-radar analyze   # Full analysis'));
-    console.log(chalk.white('  claude-cider generate EPIC-DOCS "setup documentation"'));
+    console.log(chalk.white('  claude                 # Open Claude IDE'));
+    console.log(chalk.white('  /radar:quick           # Quick analysis'));
+    console.log(chalk.white('  /radar:analyze         # Full analysis'));
+    console.log(chalk.white('  /cider:generate        # Generate issues'));
 
   } catch (error) {
     spinner.fail('Quick setup failed ❌');
@@ -728,9 +751,14 @@ program
         const content = fs.readFileSync('./.gitignore', 'utf8');
         return content.includes('.claude/sessions/');
       }},
-      { name: '.claude/ structure', check: () => fs.existsSync('./.claude') },
-      { name: 'Current state files', check: () => 
-        fs.existsSync('./.claude/current/project-state.md') && 
+            { name: '.claude/ structure', check: () => fs.existsSync('./.claude') },
+      { name: 'Slash commands installed', check: () =>
+        fs.existsSync('./.claude/commands/setup.md') &&
+        fs.existsSync('./.claude/commands/radar/analyze.md') &&
+        fs.existsSync('./.claude/commands/cider/generate.md')
+      },
+      { name: 'Current state files', check: () =>
+        fs.existsSync('./.claude/current/project-state.md') &&
         fs.existsSync('./.claude/current/active-epic.md')
       },
       { name: 'Epic management', check: () => fs.existsSync('./.claude/epics/epics-roadmap.md') },
