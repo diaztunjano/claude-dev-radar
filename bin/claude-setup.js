@@ -10,6 +10,14 @@ const fs = require('fs');
 
 const program = new Command();
 
+// Debug logging function
+function debugLog(message, data = null) {
+  if (process.env.CLAUDE_SETUP_DEBUG === 'true') {
+    console.log(chalk.gray(`[DEBUG] ${new Date().toISOString()} - ${message}`));
+    if (data) console.log(chalk.gray(JSON.stringify(data, null, 2)));
+  }
+}
+
 function createGitignoreEntry() {
   const gitignorePath = './.gitignore';
   const entries = [
@@ -564,16 +572,43 @@ async function setupProject() {
   // Run analysis if requested
   if (answers.runAnalysis) {
     const packageDir = path.dirname(path.dirname(__filename));
-    const scriptPath = path.join(packageDir, 'claude-repo-analyzer.sh');
+    const scriptPath = path.join(packageDir, '.sh');
+    
+    debugLog('Analysis requested', { analysisType: answers.analysisType, scriptPath });
 
+    // Validate script exists
+    if (!fs.existsSync(scriptPath)) {
+      console.log(chalk.red(`❌ Analysis script not found at: ${scriptPath}`));
+      console.log(chalk.yellow('💡 You can run analysis later with: claude-radar analyze'));
+      return;
+    }
+    
     const spinner = ora(`Running ${answers.analysisType} analysis...`).start();
+    let progressInterval;
+    
+    // Show progress updates every 10 seconds
+    let elapsed = 0;
+    progressInterval = setInterval(() => {
+      elapsed += 10;
+      spinner.text = `Running ${answers.analysisType} analysis... (${elapsed}s elapsed)`;
+      debugLog(`Analysis progress: ${elapsed}s elapsed`);
+    }, 10000);
 
     try {
       const command = answers.analysisType === 'quick'
         ? `bash "${scriptPath}" discover && bash "${scriptPath}" report`
         : `bash "${scriptPath}" analyze`;
+      
+      debugLog('Executing analysis command', { command, cwd: process.cwd() });
 
-      execSync(command, { stdio: 'pipe', cwd: process.cwd() });
+      execSync(command, { 
+        stdio: 'pipe', 
+        cwd: process.cwd(),
+        timeout: 900000 // 15 minutes timeout
+      });
+      
+      clearInterval(progressInterval);
+      debugLog('Analysis completed successfully');
       spinner.succeed(`${answers.analysisType} analysis completed ✅`);
 
       // Show generated files
@@ -594,8 +629,34 @@ async function setupProject() {
       }
 
     } catch (error) {
+      clearInterval(progressInterval);
       spinner.fail('Analysis failed ❌');
+      
+      debugLog('Analysis failed', {
+        error: error.message,
+        code: error.status,
+        signal: error.signal,
+        stdout: error.stdout,
+        stderr: error.stderr
+      });
+      
+      // Provide helpful error messages
+      if (error.signal === 'SIGTERM' || error.code === null) {
+        console.log(chalk.red('❌ Analysis timed out after 15 minutes'));
+        console.log(chalk.yellow('💡 Try: claude-radar quick (faster analysis)'));
+      } else if (error.message.includes('ENOENT')) {
+        console.log(chalk.red('❌ Analysis script not found'));
+        console.log(chalk.yellow(`💡 Expected script at: ${scriptPath}`));
+      } else {
+        console.log(chalk.red(`❌ Analysis error: ${error.message}`));
+        if (error.stderr) {
+          console.log(chalk.red('Error details:'));
+          console.log(chalk.gray(error.stderr));
+        }
+      }
+      
       console.log(chalk.yellow('💡 You can run analysis later with: claude-radar analyze'));
+      console.log(chalk.gray('🐛 For debugging, run with: CLAUDE_SETUP_DEBUG=true claude-setup init'));
     }
   }
 

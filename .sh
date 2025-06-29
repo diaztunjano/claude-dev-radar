@@ -188,7 +188,10 @@ phase_reconocer() {
 
     log_phase "🔍 FASE 1: RECONOCER - Estructura y Propósito"
 
-    claude "MODO: RECONOCIMIENTO DE REPOSITORIO (R.A.D.A.R. FASE 1)
+    # Create the analysis prompt
+    local prompt_file=$(mktemp)
+    cat > "$prompt_file" << 'EOF'
+MODO: RECONOCIMIENTO DE REPOSITORIO (R.A.D.A.R. FASE 1)
 
 REPOSITORIO A ANALIZAR: $repo_path
 

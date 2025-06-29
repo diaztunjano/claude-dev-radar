@@ -11,17 +11,37 @@ const program = new Command();
 
 // Get the directory where this script is installed
 const packageDir = path.dirname(path.dirname(__filename));
-const scriptPath = path.join(packageDir, 'claude-repo-analyzer.sh');
+const scriptPath = path.join(packageDir, '.sh');
+
+// Debug logging function
+function debugLog(message, data = null) {
+  if (process.env.CLAUDE_RADAR_DEBUG === 'true') {
+    console.log(chalk.gray(`[DEBUG] ${new Date().toISOString()} - ${message}`));
+    if (data) console.log(chalk.gray(JSON.stringify(data, null, 2)));
+  }
+}
 
 function checkPrerequisites() {
+  debugLog('Starting prerequisites check');
   const spinner = ora('Checking prerequisites...').start();
 
   try {
     // Check if we're in a Git repository
+    debugLog('Checking Git repository');
     execSync('git rev-parse --git-dir', { stdio: 'pipe' });
+    debugLog('Git repository check passed');
 
     // Check if Claude Code is available
+    debugLog('Checking Claude Code availability');
     execSync('claude --version', { stdio: 'pipe' });
+    debugLog('Claude Code check passed');
+
+    // Validate script path exists
+    debugLog('Checking script path', { scriptPath });
+    if (!fs.existsSync(scriptPath)) {
+      throw new Error(`RADAR script not found at: ${scriptPath}`);
+    }
+    debugLog('Script path validation passed');
 
     spinner.succeed('Prerequisites verified ✅');
     return true;
@@ -43,18 +63,36 @@ function checkPrerequisites() {
 }
 
 function runRadarCommand(command, repoPath = '.') {
+  debugLog('Starting RADAR command', { command, repoPath });
+  
   if (!checkPrerequisites()) {
     process.exit(1);
   }
 
   const spinner = ora(`Running R.A.D.A.R. ${command}...`).start();
+  let progressInterval;
+  
+  // Show progress updates every 10 seconds
+  let elapsed = 0;
+  progressInterval = setInterval(() => {
+    elapsed += 10;
+    spinner.text = `Running R.A.D.A.R. ${command}... (${elapsed}s elapsed)`;
+    debugLog(`Progress update: ${elapsed}s elapsed for ${command}`);
+  }, 10000);
 
   try {
-    const result = execSync(`bash "${scriptPath}" ${command} "${repoPath}"`, {
+    const fullCommand = `bash "${scriptPath}" ${command} "${repoPath}"`;
+    debugLog('Executing command', { fullCommand, cwd: process.cwd() });
+    
+    const result = execSync(fullCommand, {
       stdio: 'pipe',
       encoding: 'utf8',
-      cwd: process.cwd()
+      cwd: process.cwd(),
+      timeout: 900000 // 15 minutes timeout
     });
+    
+    clearInterval(progressInterval);
+    debugLog('Command completed successfully', { outputLength: result.length });
 
     spinner.succeed(`R.A.D.A.R. ${command} completed ✅`);
     console.log(result);
@@ -67,8 +105,33 @@ function runRadarCommand(command, repoPath = '.') {
     }
 
   } catch (error) {
+    clearInterval(progressInterval);
     spinner.fail(`R.A.D.A.R. ${command} failed ❌`);
-    console.error(chalk.red(error.message));
+    
+    debugLog('Command failed', { 
+      error: error.message, 
+      code: error.status,
+      signal: error.signal,
+      stdout: error.stdout,
+      stderr: error.stderr
+    });
+    
+    // Provide helpful error messages
+    if (error.signal === 'SIGTERM' || error.code === null) {
+      console.error(chalk.red('❌ Command timed out after 15 minutes'));
+      console.error(chalk.yellow('💡 Try running individual phases: claude-radar discover, claude-radar examine, etc.'));
+    } else if (error.message.includes('ENOENT')) {
+      console.error(chalk.red('❌ Script file not found'));
+      console.error(chalk.yellow(`💡 Expected script at: ${scriptPath}`));
+    } else {
+      console.error(chalk.red(`❌ ${error.message}`));
+      if (error.stderr) {
+        console.error(chalk.red('Standard Error:'));
+        console.error(error.stderr);
+      }
+    }
+    
+    console.log(chalk.gray('\n🐛 For debugging, run with: CLAUDE_RADAR_DEBUG=true claude-radar ' + command));
     process.exit(1);
   }
 }

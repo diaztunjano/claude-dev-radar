@@ -1,6 +1,6 @@
 {
   "name": "claude-dev-radar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered development tools: R.A.D.A.R. repository analysis + C.I.D.E.R. atomic issues system for Claude Code",
   "main": "index.js",
   "bin": {
@@ -9,8 +9,13 @@
     "claude-setup": "./bin/claude-setup.js"
   },
   "scripts": {
+    "dev": "npm link && echo 'Development mode ready! Use: claude-radar, claude-cider, claude-setup'",
+    "dev-unlink": "npm unlink -g claude-dev-radar",
     "install-global": "npm install -g .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:radar && npm run test:cider",
+    "test:radar": "echo 'Testing RADAR commands...' && claude-radar --help && echo 'RADAR help OK ✅'",
+    "test:cider": "echo 'Testing CIDER commands...' && claude-cider --help && echo 'CIDER help OK ✅'",
+    "test:full": "echo 'Running full integration test...' && CLAUDE_RADAR_DEBUG=true claude-radar discover . && echo 'Integration test completed ✅'"
   },
   "keywords": [
     "claude",

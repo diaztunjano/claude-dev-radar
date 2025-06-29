@@ -8,21 +8,25 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+GRAY='\033[0;37m'
 NC='\033[0m' # No Color
+
+# Safe spinner characters (ASCII compatible)
+SPINNER_CHARS="/-\|"
 
 # Animation function
 animate_loading() {
     local duration=$1
     local msg=$2
-    local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     local i=0
 
     while [ $i -lt $duration ]; do
-        printf "\r${BLUE}%s${NC} %s" "${chars:$((i % ${#chars})):1}" "$msg"
+        printf "\r${BLUE}[%s]${NC} %s" "${SPINNER_CHARS:$((i % ${#SPINNER_CHARS})):1}" "$msg"
         sleep 0.1
         i=$((i + 1))
     done
-    printf "\r${GREEN}✅${NC} %s\n" "$msg"
+    printf "\r${GREEN}[+]${NC} %s\n" "$msg"
 }
 
 # Logo
@@ -37,33 +41,33 @@ show_logo() {
 
 EOF
     echo -e "${NC}"
-    echo -e "${CYAN}🚀 AI-Powered Development Tools for Claude Code${NC}"
+    echo -e "${CYAN}>> AI-Powered Development Tools for Claude Code${NC}"
     echo -e "${GRAY}Installing R.A.D.A.R. + C.I.D.E.R. automation systems...${NC}"
     echo ""
 }
 
 # Check prerequisites
 check_prerequisites() {
-    echo -e "${YELLOW}🔍 Checking prerequisites...${NC}"
+    echo -e "${YELLOW}>> Checking prerequisites...${NC}"
 
     # Check Node.js
     if ! command -v node &> /dev/null; then
-        echo -e "${RED}❌ Node.js not found${NC}"
-        echo -e "${YELLOW}💡 Install from: https://nodejs.org${NC}"
+        echo -e "${RED}[X] Node.js not found${NC}"
+        echo -e "${YELLOW}[!] Install from: https://nodejs.org${NC}"
         exit 1
     fi
 
     # Check npm
     if ! command -v npm &> /dev/null; then
-        echo -e "${RED}❌ npm not found${NC}"
+        echo -e "${RED}[X] npm not found${NC}"
         exit 1
     fi
 
     # Check Claude Code
     if ! command -v claude &> /dev/null; then
-        echo -e "${YELLOW}⚠️  Claude Code not found${NC}"
-        echo -e "${YELLOW}💡 Install with: curl -sSL https://claude.ai/install | sh${NC}"
-        echo -e "${BLUE}🤔 Continue installation anyway? (y/N)${NC}"
+        echo -e "${YELLOW}[!] Claude Code not found${NC}"
+        echo -e "${YELLOW}[>] Install with: curl -sSL https://claude.ai/install | sh${NC}"
+        echo -e "${BLUE}[?] Continue installation anyway? (y/N)${NC}"
         read -r response
         if [[ ! "$response" =~ ^[Yy]$ ]]; then
             exit 1
@@ -72,20 +76,20 @@ check_prerequisites() {
 
     # Check Git
     if ! command -v git &> /dev/null; then
-        echo -e "${RED}❌ Git not found${NC}"
+        echo -e "${RED}[X] Git not found${NC}"
         exit 1
     fi
 
-    echo -e "${GREEN}✅ Prerequisites check passed${NC}"
+    echo -e "${GREEN}[+] Prerequisites check passed${NC}"
     echo ""
 }
 
 # Install package globally
 install_package() {
-    echo -e "${BLUE}📦 Installing claude-dev-radar globally...${NC}"
+    echo -e "${BLUE}>> Installing claude-dev-radar globally...${NC}"
 
     if npm list -g claude-dev-radar &> /dev/null; then
-        echo -e "${YELLOW}📦 claude-dev-radar already installed, updating...${NC}"
+        echo -e "${YELLOW}[>] claude-dev-radar already installed, updating...${NC}"
         npm update -g claude-dev-radar
     else
         npm install -g claude-dev-radar
@@ -97,11 +101,11 @@ install_package() {
 
 # Setup current project
 setup_project() {
-    echo -e "${PURPLE}🚀 Setting up current project...${NC}"
+    echo -e "${PURPLE}>> Setting up current project...${NC}"
 
     # Check if we're in a Git repository
     if [ ! -d ".git" ]; then
-        echo -e "${YELLOW}📁 Initializing Git repository...${NC}"
+        echo -e "${YELLOW}[>] Initializing Git repository...${NC}"
         git init
         git add .
         git commit -m "Initial commit with Claude Dev R.A.D.A.R. setup" || true
@@ -111,7 +115,7 @@ setup_project() {
     if command -v claude-setup &> /dev/null; then
         claude-setup quick
     else
-        echo -e "${YELLOW}⚠️  claude-setup command not available, manual setup...${NC}"
+        echo -e "${YELLOW}[!] claude-setup command not available, manual setup...${NC}"
 
         # Create .gitignore entries
         if [ ! -f ".gitignore" ]; then
@@ -141,37 +145,37 @@ setup_project() {
 EOF
     fi
 
-    echo -e "${GREEN}✅ Project setup completed${NC}"
+    echo -e "${GREEN}[+] Project setup completed${NC}"
     echo ""
 }
 
 # Run initial analysis
 run_analysis() {
-    echo -e "${CYAN}🔍 Would you like to run initial R.A.D.A.R. analysis? (Y/n)${NC}"
+    echo -e "${CYAN}[?] Would you like to run initial R.A.D.A.R. analysis? (Y/n)${NC}"
     read -r response
 
     if [[ "$response" =~ ^[Nn]$ ]]; then
         return
     fi
 
-    echo -e "${BLUE}📊 Choose analysis type:${NC}"
-    echo -e "  ${GREEN}1)${NC} ⚡ Quick (5 min) - Basic overview"
-    echo -e "  ${GREEN}2)${NC} 🎯 Full (15 min) - Complete analysis"
-    echo -e "  ${GREEN}3)${NC} 🚫 Skip analysis"
+    echo -e "${BLUE}>> Choose analysis type:${NC}"
+    echo -e "  ${GREEN}1)${NC} [>] Quick (5 min) - Basic overview"
+    echo -e "  ${GREEN}2)${NC} [>>] Full (15 min) - Complete analysis"
+    echo -e "  ${GREEN}3)${NC} [X] Skip analysis"
 
     read -r choice
 
     case $choice in
         1)
-            echo -e "${YELLOW}⚡ Running quick analysis...${NC}"
-            claude-radar quick || echo -e "${YELLOW}⚠️  Analysis failed, you can run it later with: claude-radar quick${NC}"
+            echo -e "${YELLOW}[>] Running quick analysis...${NC}"
+            claude-radar quick || echo -e "${YELLOW}[!] Analysis failed, you can run it later with: claude-radar quick${NC}"
             ;;
         2)
-            echo -e "${YELLOW}🎯 Running full analysis...${NC}"
-            claude-radar analyze || echo -e "${YELLOW}⚠️  Analysis failed, you can run it later with: claude-radar analyze${NC}"
+            echo -e "${YELLOW}[>>] Running full analysis...${NC}"
+            claude-radar analyze || echo -e "${YELLOW}[!] Analysis failed, you can run it later with: claude-radar analyze${NC}"
             ;;
         *)
-            echo -e "${GRAY}⏭️  Skipping analysis${NC}"
+            echo -e "${GRAY}[-] Skipping analysis${NC}"
             ;;
     esac
 
@@ -180,15 +184,18 @@ run_analysis() {
 
 # Show success message
 show_success() {
-    echo -e "${GREEN}🎉 INSTALLATION COMPLETE!${NC}"
     echo ""
-    echo -e "${CYAN}🚀 Available commands:${NC}"
+    echo -e "${GREEN}================================================================${NC}"
+    echo -e "${GREEN}                    INSTALLATION COMPLETE!                     ${NC}"
+    echo -e "${GREEN}================================================================${NC}"
+    echo ""
+    echo -e "${CYAN}>> Available commands:${NC}"
     echo -e "  ${WHITE}claude-radar analyze${NC}      # Full repository analysis"
     echo -e "  ${WHITE}claude-radar quick${NC}        # Quick 5-minute analysis"
     echo -e "  ${WHITE}claude-cider generate${NC}     # Generate atomic issues"
     echo -e "  ${WHITE}claude-setup init${NC}         # Setup new projects"
     echo ""
-    echo -e "${CYAN}📚 Next steps:${NC}"
+    echo -e "${CYAN}>> Next steps:${NC}"
     if [ -d "./analysis" ]; then
         echo -e "  ${WHITE}1.${NC} Review generated analysis: ${BLUE}ls analysis/${NC}"
         echo -e "  ${WHITE}2.${NC} Check executive summary: ${BLUE}cat analysis/reports/*-executive-summary.md${NC}"
@@ -198,8 +205,9 @@ show_success() {
     fi
     echo -e "  ${WHITE}3.${NC} Start structured development workflow"
     echo ""
-    echo -e "${PURPLE}💎 You're now equipped with AI-powered development tools!${NC}"
+    echo -e "${PURPLE}[*] You're now equipped with AI-powered development tools!${NC}"
     echo -e "${GRAY}Documentation: https://github.com/yourusername/claude-dev-radar${NC}"
+    echo ""
 }
 
 # Main installation flow
@@ -213,7 +221,7 @@ main() {
 }
 
 # Error handling
-trap 'echo -e "\n${RED}❌ Installation failed. Check the error above.${NC}"; exit 1' ERR
+trap 'echo -e "\n${RED}[X] Installation failed. Check the error above.${NC}"; exit 1' ERR
 
 # Run main function
 main
