@@ -1,3 +1,8 @@
+---
+allowed-tools: Bash(echo:*), Bash(date:*), Bash(basename:*), Bash(git:*), Bash(find:*), Bash(grep:*), Bash(wc:*), Bash(head:*), Bash(sed:*), Bash(sort:*), Read
+description: View current project status, active epics, and issue progress
+---
+
 # 📊 C.I.D.E.R. Project Status
 
 **View current project status, active epics, and issue progress**
@@ -57,7 +62,7 @@ done
     echo "📚 **Documentation**: $(find analysis/onboarding/ -name "*.md" | wc -l) files"
 else
     echo "⚠️ **Analysis**: Not run yet"
-    echo "💡 **Recommendation**: Run `/radar:analyze` for complete project overview"
+    echo "💡 **Recommendation**: Run `/project:radar:analyze` for complete project overview"
 fi
 
 ### Development Structure
@@ -90,35 +95,35 @@ done || echo "No session history yet"
 ### Available Commands
 ```bash
 # Analysis Commands
-/radar:analyze          # Complete project analysis (5 min)
-/radar:quick           # Fast overview (2 min)
+/project:radar:analyze          # Complete project analysis (5 min)
+/project:radar:quick           # Fast overview (2 min)
 
 # Issue Management  
-/cider:generate EPIC "description"  # Create new atomic issue
-/cider:work <issue-number> <scope>  # Start working on issue
-/cider:list-epics                   # Show all available epics
+/project:cider:generate EPIC "description"  # Create new atomic issue
+/project:cider:work <issue-number> <scope>  # Start working on issue
+/project:cider:list-epics                   # Show all available epics
 
 # Project Setup
-/setup                 # Initialize or reconfigure project
+/project:setup                 # Initialize or reconfigure project
 ```
 
 ### Recommended Next Steps
 Based on current project state:
 
 !if [ ! -d "analysis" ]; then
-    echo "1. **🔍 Run Analysis**: `/radar:analyze` to understand your codebase"
+    echo "1. **🔍 Run Analysis**: `/project:radar:analyze` to understand your codebase"
     echo "2. **📋 Review Epics**: Check generated roadmap for priorities"
-    echo "3. **🎯 Generate Issues**: Use `/cider:generate` to create work items"
+    echo "3. **🎯 Generate Issues**: Use `/project:cider:generate` to create work items"
 elif [ "$TODO_COUNT" -eq 0 ]; then
-    echo "1. **🎯 Generate Issues**: Use `/cider:generate EPIC \"description\"` to create work"
+    echo "1. **🎯 Generate Issues**: Use `/project:cider:generate EPIC \"description\"` to create work"
     echo "2. **📋 Review Roadmap**: Update epic priorities in `.claude/epics/epics-roadmap.md`"
     echo "3. **🔄 Start Development**: Begin structured work with atomic issues"
 elif [ "$PROGRESS_COUNT" -gt 0 ]; then
-    echo "1. **⚡ Continue Work**: Resume active issues with `/cider:work`"
+    echo "1. **⚡ Continue Work**: Resume active issues with `/project:cider:work`"
     echo "2. **📊 Track Progress**: Update issue status and document decisions"
     echo "3. **🔄 Review & Iterate**: Complete current work before starting new issues"
 else
-    echo "1. **🚀 Start Work**: Use `/cider:work <issue-number> <scope>` to begin"
+    echo "1. **🚀 Start Work**: Use `/project:cider:work <issue-number> <scope>` to begin"
     echo "2. **📝 Document Progress**: Follow C.I.D.E.R. methodology"
     echo "3. **🔄 Iterate**: Regular reviews and continuous improvement"
 fi
@@ -134,7 +139,7 @@ fi
     HEALTH_SCORE=$((HEALTH_SCORE + 20))
     echo "✅ **Analysis Complete**: +20 points"
 else
-    echo "❌ **No Analysis**: 0 points (run /radar:analyze)"
+    echo "❌ **No Analysis**: 0 points (run /project:radar:analyze)"
 fi
 
 !# Issue management (+20 points)
@@ -143,7 +148,7 @@ fi
     HEALTH_SCORE=$((HEALTH_SCORE + 20))
     echo "✅ **Issues Created**: +20 points ($TOTAL_ISSUES total)"
 else
-    echo "❌ **No Issues**: 0 points (run /cider:generate)"
+    echo "❌ **No Issues**: 0 points (run /project:cider:generate)"
 fi
 
 !# Active development (+20 points)
@@ -159,7 +164,7 @@ fi
     HEALTH_SCORE=$((HEALTH_SCORE + 20))
     echo "✅ **Documentation Structure**: +20 points"
 else
-    echo "❌ **Incomplete Documentation**: 0 points (run /setup)"
+    echo "❌ **Incomplete Documentation**: 0 points (run /project:setup)"
 fi
 
 !# Recent activity (+20 points)
@@ -189,9 +194,9 @@ fi
 ## 💡 Tips for Improvement
 
 ### If Health Score < 40:
-- Run `/setup` to initialize project structure
-- Execute `/radar:analyze` for comprehensive analysis
-- Create first issues with `/cider:generate`
+- Run `/project:setup` to initialize project structure
+- Execute `/project:radar:analyze` for comprehensive analysis
+- Create first issues with `/project:cider:generate`
 
 ### If Health Score 40-60:
 - Complete any missing analysis phases

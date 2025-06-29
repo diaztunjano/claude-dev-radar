@@ -1,4 +1,9 @@
-# 🚀 Project Setup - Claude Dev R.A.D.A.R.
+---
+allowed-tools: Bash(find:*), Bash(git:*), Bash(ls:*), Bash(cat:*), Bash(echo:*), Bash(grep:*), Bash(touch:*), Read, Write, Edit
+description: Setup project with HeyClaudio development tools
+---
+
+# 🚀 Project Setup - HeyClaudio
 
 **Setup your project with AI-powered development tools**
 
@@ -142,13 +147,13 @@ This file will be updated with:
 ## Commands to Get Started
 ```bash
 # List available epics
-/cider:list-epics
+/project:cider:list-epics
 
 # Generate issue for chosen epic
-/cider:generate EPIC-NAME "issue description"
+/project:cider:generate EPIC-NAME "issue description"
 
 # Work on generated issue
-/cider:work <issue-number> <scope>
+/project:cider:work <issue-number> <scope>
 ```
 EOF
 
@@ -172,14 +177,14 @@ EOF
 
 ## 🎉 Setup Complete!
 
-Your project is now equipped with Claude Dev R.A.D.A.R. tools!
+Your project is now equipped with HeyClaudio tools!
 
 ### 🚀 Next Steps:
 
-1. **Run analysis**: `/radar:analyze` - Complete project analysis (5 min)
-2. **Quick overview**: `/radar:quick` - Fast project overview (2 min)
-3. **Generate issues**: `/cider:generate EPIC-DOCS "improve README"`
-4. **Start working**: `/cider:work <issue-number> <scope>`
+1. **Run analysis**: `/project:radar:analyze` - Complete project analysis (5 min)
+2. **Quick overview**: `/project:radar:quick` - Fast project overview (2 min)
+3. **Generate issues**: `/project:cider:generate EPIC-DOCS "improve README"`
+4. **Start working**: `/project:cider:work <issue-number> <scope>`
 
 ### 📁 Files Created:
 - `.claude/current/project-state.md` - Project overview
@@ -188,9 +193,9 @@ Your project is now equipped with Claude Dev R.A.D.A.R. tools!
 - `.claude/current/active-epic.md` - Epic tracking
 
 ### 🎯 Recommended Workflow:
-1. **Understand**: `/radar:analyze` to get complete project overview
+1. **Understand**: `/project:radar:analyze` to get complete project overview
 2. **Plan**: Review generated roadmap and choose first epic
-3. **Execute**: Use `/cider:generate` and `/cider:work` for structured development
+3. **Execute**: Use `/project:cider:generate` and `/project:cider:work` for structured development
 4. **Iterate**: Regular analysis to track progress
 
 ---

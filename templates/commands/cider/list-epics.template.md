@@ -1,3 +1,8 @@
+---
+allowed-tools: Bash(echo:*), Bash(grep:*), Bash(find:*), Bash(wc:*), Bash(head:*), Bash(sed:*), Read
+description: List all available epics and their current status
+---
+
 # 📋 C.I.D.E.R. Epic List
 
 **List all available epics and their current status**
@@ -91,12 +96,12 @@ Based on current project state:
     echo "2. **EPIC-TESTING**: Establish testing foundation"
     echo "3. **EPIC-FRONTEND**: Begin with user-facing features"
     echo ""
-    echo "💡 **Next Step**: Use `/cider:generate EPIC-DOCS \"improve README\"` to create first issue"
+    echo "💡 **Next Step**: Use `/project:cider:generate EPIC-DOCS \"improve README\"` to create first issue"
 elif [ "$ACTIVE_ISSUES" -gt 0 ]; then
     echo "⚡ **Continue Active Work**:"
     echo "Focus on completing current active issues before starting new epics"
     echo ""
-    echo "💡 **Next Step**: Use `/cider:work <issue-number>` to continue active work"
+    echo "💡 **Next Step**: Use `/project:cider:work <issue-number>` to continue active work"
 else
     echo "📋 **Development Recommendations**:"
     echo "1. **Complete Current Epic**: Focus on finishing started epics"
@@ -125,16 +130,16 @@ fi
 ### Working with Epics
 ```bash
 # Generate issue for specific epic
-/cider:generate EPIC-FRONTEND "responsive navigation"
-/cider:generate EPIC-BACKEND "user authentication API"
-/cider:generate EPIC-DOCS "API documentation"
+/project:cider:generate EPIC-FRONTEND "responsive navigation"
+/project:cider:generate EPIC-BACKEND "user authentication API"
+/project:cider:generate EPIC-DOCS "API documentation"
 
 # Work on generated issues
-/cider:work 1234 full
-/cider:work 1235 quick
+/project:cider:work 1234 full
+/project:cider:work 1235 quick
 
 # Check progress
-/cider:status
+/project:cider:status
 ```
 
 ### Epic Organization
@@ -153,16 +158,16 @@ fi
 !echo "📝 **Epic Generation Examples**:"
 !echo ""
 !echo "**Frontend Development**:"
-!echo "- \`/cider:generate EPIC-FRONTEND \"user dashboard component\"\`"
-!echo "- \`/cider:generate EPIC-FRONTEND \"responsive mobile layout\"\`"
+!echo "- \`/project:cider:generate EPIC-FRONTEND \"user dashboard component\"\`"
+!echo "- \`/project:cider:generate EPIC-FRONTEND \"responsive mobile layout\"\`"
 !echo ""
 !echo "**Backend Development**:"
-!echo "- \`/cider:generate EPIC-BACKEND \"REST API endpoints\"\`"
-!echo "- \`/cider:generate EPIC-BACKEND \"database integration\"\`"
+!echo "- \`/project:cider:generate EPIC-BACKEND \"REST API endpoints\"\`"
+!echo "- \`/project:cider:generate EPIC-BACKEND \"database integration\"\`"
 !echo ""
 !echo "**Quality & Operations**:"
-!echo "- \`/cider:generate EPIC-TESTING \"unit test coverage\"\`"
-!echo "- \`/cider:generate EPIC-DEPLOYMENT \"CI/CD pipeline\"\`"
+!echo "- \`/project:cider:generate EPIC-TESTING \"unit test coverage\"\`"
+!echo "- \`/project:cider:generate EPIC-DEPLOYMENT \"CI/CD pipeline\"\`"
 
 ---
 
@@ -180,10 +185,10 @@ fi
 ### Quick Actions
 !echo ""
 !echo "⚡ **Quick Start Options**:"
-!echo "1. **Documentation**: \`/cider:generate EPIC-DOCS \"project overview\"\`"
-!echo "2. **Testing Setup**: \`/cider:generate EPIC-TESTING \"test framework setup\"\`"
-!echo "3. **Feature Development**: \`/cider:generate EPIC-FRONTEND \"main component\"\`"
+!echo "1. **Documentation**: \`/project:cider:generate EPIC-DOCS \"project overview\"\`"
+!echo "2. **Testing Setup**: \`/project:cider:generate EPIC-TESTING \"test framework setup\"\`"
+!echo "3. **Feature Development**: \`/project:cider:generate EPIC-FRONTEND \"main component\"\`"
 
 ---
 
-**📋 Epic overview complete! Choose an epic and start structured development with `/cider:generate`**
+**📋 Epic overview complete! Choose an epic and start structured development with `/project:cider:generate`**

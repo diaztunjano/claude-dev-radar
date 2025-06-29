@@ -1,8 +1,13 @@
+---
+allowed-tools: Bash(echo:*), Bash(cut:*), Bash(find:*), Bash(grep:*), Bash(head:*), Bash(git:*), Bash(npm:*), Bash(date:*), Bash(mkdir:*), Bash(cat:*), Bash(sed:*), Read, Write, Edit
+description: Work on specific issue following C.I.D.E.R. methodology
+---
+
 # 🔧 C.I.D.E.R. Issue Execution
 
 **Work on specific issue following C.I.D.E.R. methodology**
 
-**Usage**: `/cider:work ISSUE_NUMBER SCOPE`
+**Usage**: `/project:cider:work ISSUE_NUMBER SCOPE`
 
 **Arguments**: `$ARGUMENTS`
 
@@ -215,7 +220,7 @@ EOF
 - Continue implementation following the issue requirements
 - Update progress in session file: `$SESSION_FILE`
 - Test and validate work against acceptance criteria
-- Use `/cider:status` to check overall progress
+- Use `/project:cider:status` to check overall progress
 
 ### Session Management
 - **Session File**: `$SESSION_FILE`

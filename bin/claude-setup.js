@@ -640,20 +640,20 @@ async function setupProject() {
 
   console.log(chalk.cyan('\n🚀 Next steps:'));
   console.log(chalk.white('  1. Open Claude Code: claude'));
-  console.log(chalk.white('  2. Initialize project: /setup'));
-  console.log(chalk.white('  3. Run analysis: /radar:analyze'));
-  console.log(chalk.white('  4. Generate issues: /cider:generate EPIC-DOCS "improve README"'));
+  console.log(chalk.white('  2. Initialize project: /project:setup'));
+  console.log(chalk.white('  3. Run analysis: /project:radar:analyze'));
+  console.log(chalk.white('  4. Generate issues: /project:cider:generate EPIC-DOCS "improve README"'));
 
   console.log(chalk.cyan('\n📚 Available slash commands:'));
-  console.log(chalk.white('  /setup - Project initialization'));
-  console.log(chalk.white('  /radar:analyze - Full project analysis'));
-  console.log(chalk.white('  /radar:quick - Quick project overview'));
-  console.log(chalk.white('  /cider:generate - Create atomic issues'));
-  console.log(chalk.white('  /cider:work - Work on specific issue'));
-  console.log(chalk.white('  /cider:status - Project status overview'));
-  console.log(chalk.white('  /cider:list-epics - Show available epics'));
+  console.log(chalk.white('  /project:setup - Project initialization'));
+  console.log(chalk.white('  /project:radar:analyze - Full project analysis'));
+  console.log(chalk.white('  /project:radar:quick - Quick project overview'));
+  console.log(chalk.white('  /project:cider:generate - Create atomic issues'));
+  console.log(chalk.white('  /project:cider:work - Work on specific issue'));
+  console.log(chalk.white('  /project:cider:status - Project status overview'));
+  console.log(chalk.white('  /project:cider:list-epics - Show available epics'));
 
-  console.log(chalk.yellow('\n💡 Pro tip: Open Claude Code and run /setup to get started!'));
+  console.log(chalk.yellow('\n💡 Pro tip: Open Claude Code and run /project:setup to get started!'));
 }
 
 async function quickStart() {
@@ -675,9 +675,9 @@ async function quickStart() {
 
     console.log(chalk.green('\n⚡ Ready to go! Try:'));
     console.log(chalk.white('  claude                 # Open Claude IDE'));
-    console.log(chalk.white('  /radar:quick           # Quick analysis'));
-    console.log(chalk.white('  /radar:analyze         # Full analysis'));
-    console.log(chalk.white('  /cider:generate        # Generate issues'));
+    console.log(chalk.white('  /project:radar:quick           # Quick analysis'));
+    console.log(chalk.white('  /project:radar:analyze         # Full analysis'));
+    console.log(chalk.white('  /project:cider:generate        # Generate issues'));
 
   } catch (error) {
     spinner.fail('Quick setup failed ❌');

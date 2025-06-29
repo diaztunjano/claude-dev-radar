@@ -1,8 +1,13 @@
+---
+allowed-tools: Bash(echo:*), Bash(cut:*), Bash(grep:*), Bash(find:*), Bash(cat:*), Bash(date:*), Bash(tr:*), Bash(head:*), Bash(tail:*), Read, Write
+description: Generate atomic development issues following C.I.D.E.R. methodology
+---
+
 # 🎯 C.I.D.E.R. Issue Generation
 
 **Generate atomic development issues following C.I.D.E.R. methodology**
 
-**Usage**: `/cider:generate EPIC-NAME "description"`
+**Usage**: `/project:cider:generate EPIC-NAME "description"`
 
 **Arguments**: `$ARGUMENTS`
 
@@ -163,7 +168,7 @@ $DESCRIPTION
 ## 🚀 GETTING STARTED
 To work on this issue, run:
 \`\`\`bash
-/cider:work $ISSUE_NUMBER [scope]
+/project:cider:work $ISSUE_NUMBER [scope]
 \`\`\`
 
 ## 📊 DEFINITION OF DONE
@@ -204,19 +209,19 @@ Work related to: $EPIC_NAME
 
 ## Next Steps
 1. Review generated issue: \`$ISSUE_FILE\`
-2. Start implementation: \`/cider:work $ISSUE_NUMBER [scope]\`
+2. Start implementation: \`/project:cider:work $ISSUE_NUMBER [scope]\`
 3. Follow C.I.D.E.R. methodology for execution
 
 ## Commands
 \`\`\`bash
 # Work on this issue
-/cider:work $ISSUE_NUMBER frontend
+/project:cider:work $ISSUE_NUMBER frontend
 
 # Check epic status  
-/cider:status
+/project:cider:status
 
 # List all epics
-/cider:list-epics
+/project:cider:list-epics
 \`\`\`
 EOF
 
@@ -241,7 +246,7 @@ EOF
 
 ### 🚀 **Next Steps**:
 1. **Review Issue**: Open `$ISSUE_FILE` to review the generated issue
-2. **Start Work**: Use `/cider:work $ISSUE_NUMBER [scope]` to begin implementation
+2. **Start Work**: Use `/project:cider:work $ISSUE_NUMBER [scope]` to begin implementation
 3. **Track Progress**: Follow C.I.D.E.R. methodology checkboxes
 
 ### 💡 **Workflow Tips**:

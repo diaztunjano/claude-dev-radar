@@ -1,3 +1,8 @@
+---
+allowed-tools: Bash(find:*), Bash(git:*), Bash(ls:*), Bash(echo:*), Bash(wc:*), Read, Grep, Glob
+description: Fast project overview in 2 minutes
+---
+
 # ⚡ R.A.D.A.R. Quick Analysis
 
 **Fast project overview in 2 minutes**
@@ -73,9 +78,9 @@ Based on the files analyzed above, here's what I can tell you about this project
 ## 🚀 Quick Recommendations
 
 ### Immediate Actions
-1. **Next Analysis**: For deeper insights, run `/radar:analyze`
-2. **Setup Development**: Consider running `/setup` if not done
-3. **Issue Generation**: Use `/cider:generate` to start structured development
+1. **Next Analysis**: For deeper insights, run `/project:radar:analyze`
+2. **Issue Generation**: Use `/project:cider:generate` to start structured development
+3. **Epic Management**: Use `/project:cider:list-epics` to see available epics
 
 ### Priority Areas
 [Based on quick analysis, suggest 2-3 priority areas for improvement]
@@ -91,4 +96,4 @@ Based on the files analyzed above, here's what I can tell you about this project
 
 ---
 
-**⚡ Quick analysis complete! For comprehensive analysis, use `/radar:analyze`**
+**⚡ Quick analysis complete! For comprehensive analysis, use `/project:radar:analyze`**

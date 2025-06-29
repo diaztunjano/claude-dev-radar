@@ -1,3 +1,8 @@
+---
+allowed-tools: Bash(find:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(head:*), Bash(tail:*), Bash(cat:*), Bash(echo:*), Bash(mkdir:*), Bash(tree:*), Read, Grep, Glob
+description: Comprehensive project analysis following R.A.D.A.R. methodology
+---
+
 # 🔍 R.A.D.A.R. Complete Analysis
 
 **Transform unknown codebase into mastered project in 5 minutes**
@@ -567,7 +572,7 @@ EOF
 
 ### 🚀 Recommended Next Steps:
 1. **Review executive summary**: `analysis/reports/$TIMESTAMP-executive-summary.md`
-2. **Choose first epic**: Use `/cider:generate` to create structured issues
+2. **Choose first epic**: Use `/project:cider:generate` to create structured issues
 3. **Start development**: Follow C.I.D.E.R. methodology for execution
 
 **Your repository analysis is complete! You now have professional-grade understanding and documentation ready for action.**

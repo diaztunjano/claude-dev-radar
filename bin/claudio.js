@@ -84,16 +84,16 @@ function showStatus() {
   if (!setupOk) {
     console.log(chalk.white('  1. claudio init          # Setup project'));
     console.log(chalk.white('  2. claude                # Open Claude IDE'));
-    console.log(chalk.white('  3. /radar:analyze        # Run analysis'));
+    console.log(chalk.white('  3. /project:radar:analyze        # Run analysis'));
   } else if (!claudeOk) {
     console.log(chalk.white('  1. Install Claude IDE    # https://claude.ai/download'));
     console.log(chalk.white('  2. claude                # Open Claude IDE'));
-    console.log(chalk.white('  3. /radar:analyze        # Run analysis'));
+    console.log(chalk.white('  3. /project:radar:analyze        # Run analysis'));
   } else {
     console.log(chalk.white('  1. claude                # Open Claude IDE'));
-    console.log(chalk.white('  2. /radar:analyze        # Run analysis'));
-    console.log(chalk.white('  3. /cider:generate       # Create issues'));
-    console.log(chalk.white('  4. /cider:work           # Start development'));
+    console.log(chalk.white('  2. /project:radar:analyze        # Run analysis'));
+    console.log(chalk.white('  3. /project:cider:generate       # Create issues'));
+    console.log(chalk.white('  4. /project:cider:work           # Start development'));
   }
 }
 
@@ -110,19 +110,19 @@ function showCommands() {
   console.log(chalk.white('  claudio analyze          # Run quick analysis'));
 
   console.log(chalk.cyan('\n⚡ Claude IDE Commands (use inside Claude):'));
-  console.log(chalk.white('  /radar:analyze           # Complete project analysis'));
-  console.log(chalk.white('  /radar:quick             # Quick project overview'));
-  console.log(chalk.white('  /cider:generate          # Generate atomic issues'));
-  console.log(chalk.white('  /cider:work              # Work on specific issue'));
-  console.log(chalk.white('  /cider:status            # Project status'));
-  console.log(chalk.white('  /cider:list-epics        # List available epics'));
+  console.log(chalk.white('  /project:radar:analyze           # Complete project analysis'));
+  console.log(chalk.white('  /project:radar:quick             # Quick project overview'));
+  console.log(chalk.white('  /project:cider:generate          # Generate atomic issues'));
+  console.log(chalk.white('  /project:cider:work              # Work on specific issue'));
+  console.log(chalk.white('  /project:cider:status            # Project status'));
+  console.log(chalk.white('  /project:cider:list-epics        # List available epics'));
 
   console.log(chalk.yellow('\n💡 Workflow:'));
   console.log(chalk.gray('  1. claudio init          # One-time setup'));
   console.log(chalk.gray('  2. claude                # Open Claude IDE'));
-  console.log(chalk.gray('  3. /radar:analyze        # Understand project'));
-  console.log(chalk.gray('  4. /cider:generate       # Create work items'));
-  console.log(chalk.gray('  5. /cider:work           # Start coding'));
+  console.log(chalk.gray('  3. /project:radar:analyze        # Understand project'));
+  console.log(chalk.gray('  4. /project:cider:generate       # Create work items'));
+  console.log(chalk.gray('  5. /project:cider:work           # Start coding'));
 }
 
 // Commands
@@ -150,8 +150,8 @@ program
       console.log(chalk.green.bold('\n🎉 PROJECT READY!'));
       console.log(chalk.cyan('\n🚀 What\'s next?'));
       console.log(chalk.white('  1. Open Claude IDE: ' + chalk.bold('claude')));
-      console.log(chalk.white('  2. Run analysis: ' + chalk.bold('/radar:analyze')));
-      console.log(chalk.white('  3. Start coding: ' + chalk.bold('/cider:generate')));
+      console.log(chalk.white('  2. Run analysis: ' + chalk.bold('/project:radar:analyze')));
+      console.log(chalk.white('  3. Start coding: ' + chalk.bold('/project:cider:generate')));
 
     } catch (error) {
       console.error(chalk.red('❌ Setup failed:'), error.message);
@@ -208,8 +208,8 @@ program
     console.log(chalk.cyan('🔍 Analysis is now integrated into Claude IDE'));
     console.log(chalk.white('\n📋 To analyze your project:'));
     console.log(chalk.green('  1. Open Claude Code: ' + chalk.bold('claude')));
-    console.log(chalk.green('  2. Run quick analysis: ' + chalk.bold('/radar:quick')));
-    console.log(chalk.green('  3. Run full analysis: ' + chalk.bold('/radar:analyze')));
+    console.log(chalk.green('  2. Run quick analysis: ' + chalk.bold('/project:radar:quick')));
+    console.log(chalk.green('  3. Run full analysis: ' + chalk.bold('/project:radar:analyze')));
 
     console.log(chalk.yellow('\n💡 This provides better integration and user experience'));
     console.log(chalk.gray('   Native slash commands work directly in Claude IDE'));
@@ -227,7 +227,7 @@ program.configureHelp({
 ${chalk.cyan('🎯 Quick Start:')}
   ${chalk.white('claudio init')}             # Initialize project
   ${chalk.white('claude')}                   # Open Claude IDE
-  ${chalk.white('/radar:analyze')}           # Run analysis
+  ${chalk.white('/project:radar:analyze')}           # Run analysis
 
 ${chalk.cyan('💡 Need help?')}
   ${chalk.white('claudio help-commands')}    # Show all commands
