@@ -79,14 +79,14 @@ check_prerequisites() {
 # Install package (if available)
 install_package() {
     if [ "$CLI_AVAILABLE" = true ]; then
-        echo -e "${BLUE}>> Installing claudio globally...${NC}"
+        echo -e "${BLUE}>> Installing hey-claudio globally...${NC}"
 
         # Try to install from NPM, fallback to local install
-        if npm list -g claudio &> /dev/null; then
-            echo -e "${YELLOW}[>] claudio already installed, updating...${NC}"
-            npm update -g claudio
-        elif npm view claudio &> /dev/null; then
-            npm install -g claudio
+        if npm list -g hey-claudio &> /dev/null; then
+            echo -e "${YELLOW}[>] hey-claudio already installed, updating...${NC}"
+            npm update -g hey-claudio
+        elif npm view hey-claudio &> /dev/null; then
+            npm install -g hey-claudio
         else
             echo -e "${YELLOW}[!] NPM package not available, using local installation...${NC}"
             # Local installation logic would go here
@@ -110,7 +110,7 @@ setup_project() {
         echo -e "${YELLOW}[>] Initializing Git repository...${NC}"
         git init
         git add .
-        git commit -m "Initial commit with Claudio setup" || true
+        git commit -m "Initial commit with HeyClaudio setup" || true
     fi
 
     # Create .claude structure
@@ -342,9 +342,9 @@ I'll generate a structured issue following C.I.D.E.R. methodology:
 EOF
 
     # Run claudio setup if available
-    if [ "$CLI_AVAILABLE" = true ] && command -v claudio &> /dev/null; then
-        echo -e "${BLUE}[>] Running claudio init...${NC}"
-        claudio init || true
+    if [ "$CLI_AVAILABLE" = true ] && command -v hey-claudio &> /dev/null; then
+        echo -e "${BLUE}[>] Running hey-claudio init...${NC}"
+        hey-claudio init || true
     fi
 
     # Create .gitignore entries

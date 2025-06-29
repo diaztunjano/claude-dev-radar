@@ -1,14 +1,14 @@
-# 🤖 Claudio - AI-Powered Development Assistant
+# 🤖 HeyClaudio - AI-Powered Development Assistant
 
 **Setup once, develop with AI everywhere.**
 
-Claudio transforms any repository into an AI-powered development environment with **R.A.D.A.R. analysis** and **C.I.D.E.R. atomic issues** for Claude IDE.
+HeyClaudio transforms any repository into an AI-powered development environment with **R.A.D.A.R. analysis** and **C.I.D.E.R. atomic issues** for Claude IDE.
 
 ## 🚀 Quick Start
 
 ```bash
 # 1. Install globally
-npm i -g claudio
+npm i -g hey-claudio
 
 # 2. Setup in any project
 cd your-project
@@ -44,7 +44,7 @@ claude
 
 ### **Setup (One Time)**
 ```bash
-npm i -g claudio
+npm i -g hey-claudio
 cd your-project
 claudio init                 # Creates .claude/ structure + slash commands
 ```
@@ -143,7 +143,7 @@ claude                     # Open Claude IDE
 
 ## 🎨 Example Epic Types
 
-Claudio automatically suggests epics based on your tech stack:
+HeyClaudio automatically suggests epics based on your tech stack:
 
 - **EPIC-FRONTEND**: User interface development
 - **EPIC-BACKEND**: Server-side development
@@ -216,14 +216,14 @@ Creates issue with:
 
 ### Global Installation (Recommended)
 ```bash
-npm i -g claudio
+npm i -g hey-claudio
 ```
 
 ### Local Installation
 ```bash
 cd your-project
-npm i claudio
-npx claudio init
+npm i hey-claudio
+npx hey-claudio init
 ```
 
 ## 🆘 Support
@@ -268,4 +268,4 @@ MIT - Build amazing things with AI assistance!
 
 ---
 
-**🤖 Claudio - Making every developer an AI-powered expert**
+**🤖 HeyClaudio - Making every developer an AI-powered expert**

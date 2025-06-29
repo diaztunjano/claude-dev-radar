@@ -1,16 +1,16 @@
 {
-  "name": "claudio",
+  "name": "hey-claudio",
   "version": "1.1.0",
-  "description": "🤖 Claudio: AI-powered development assistant with R.A.D.A.R. analysis + C.I.D.E.R. atomic issues for Claude IDE",
+  "description": "🤖 HeyClaudio: AI-powered development assistant with R.A.D.A.R. analysis + C.I.D.E.R. atomic issues for Claude IDE",
   "main": "bin/claudio.js",
   "bin": {
     "claudio": "./bin/claudio.js"
   },
   "scripts": {
-    "dev": "npm link && echo '🚀 Development mode ready! Use: claudio'",
-    "dev-unlink": "npm unlink -g claudio",
+    "dev": "npm link && echo '🚀 Development mode ready! Use: hey-claudio'",
+    "dev-unlink": "npm unlink -g hey-claudio",
     "install-global": "npm install -g .",
-    "test": "node bin/claudio.js --help && echo '✅ Claudio help OK'",
+    "test": "node bin/claudio.js --help && echo '✅ HeyClaudio help OK'",
     "test:init": "node bin/claudio.js init --help && echo '✅ Init command OK'",
     "test:full": "echo '🧪 Running full test...' && node bin/claudio.js status && echo '✅ Full test completed'"
   },
@@ -27,7 +27,7 @@
     "productivity",
     "freelance"
   ],
-  "author": "Claudio AI Assistant",
+  "author": "HeyClaudio AI Assistant",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"

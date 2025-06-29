@@ -1,4 +1,4 @@
-# 📦 Publishing Guide - Claudio
+# 📦 Publishing Guide - HeyClaudio
 
 **AI-Powered Development Assistant for Claude Code**
 
@@ -10,8 +10,8 @@
 **Best for**: Clean, simple distribution with maximum compatibility
 
 #### **Strategy**: One CLI → Native Slash Commands
-- **Primary**: `npm i -g claudio` → Global CLI available everywhere
-- **Usage**: `claudio init` → Creates .claude/ structure with native slash commands
+- **Primary**: `npm i -g hey-claudio` → Global CLI available everywhere
+- **Usage**: `hey-claudio init` → Creates .claude/ structure with native slash commands
 - **Target**: Seamless Claude Code integration with professional CLI
 
 #### **Advantages**:
@@ -24,11 +24,11 @@
 #### **Installation Flow**:
 ```bash
 # Install globally
-npm i -g claudio
+npm i -g hey-claudio
 
 # Setup any project
 cd your-project
-claudio init
+hey-claudio init
 
 # Start developing
 claude
@@ -50,8 +50,8 @@ npm version 1.0.0
 npm publish
 
 # 4. Verify installation
-npm install -g claudio
-claudio --version
+npm install -g hey-claudio
+hey-claudio --version
 ```
 
 #### **Updates**:
@@ -75,9 +75,9 @@ npm publish
 # 3. Include pre-configured .claude/ structure
 
 # Client usage:
-gh repo create client-project --template yourusername/claudio-template
+gh repo create client-project --template yourusername/hey-claudio-template
 cd client-project
-claudio init  # Setup complete!
+hey-claudio init  # Setup complete!
 claude        # Start developing
 ```
 
@@ -87,11 +87,11 @@ claude        # Start developing
 #### **Professional Usage**:
 ```bash
 # Global installation for consulting
-npm i -g claudio
+npm i -g hey-claudio
 
 # Client project setup
 cd client-project
-claudio init
+hey-claudio init
 
 # Professional workflow ready
 claude
@@ -123,7 +123,7 @@ claude
 # Setup premium
 npm install -g claude-dev-radar-pro
 export CLAUDE_RADAR_LICENSE="your-license-key"
-claudio analyze --premium
+hey-claudio analyze --premium
 ```
 
 ### **🎯 Consulting Packages**
@@ -146,7 +146,7 @@ claudio analyze --premium
 ### **📚 Professional Resources**
 
 #### **Training Materials**:
-- "Claudio Mastery Course" - $149
+- "HeyClaudio Mastery Course" - $149
 - "AI-Powered Development Workflow" - $99
 - "Claude Code Slash Commands Mastery" - $79
 
@@ -162,14 +162,14 @@ claudio analyze --premium
 ### **1. 📝 Complete Documentation**
 
 ```bash
-# Current structure (claudio architecture)
+# Current structure (hey-claudio architecture)
 claude-dev-radar/
 ├── README.md                 # NPM main readme ✅
 ├── CHANGELOG.md             # Version history ✅
 ├── LICENSE                  # MIT license ✅
 ├── package.json             # NPM metadata ✅
 ├── bin/                     # CLI executables ✅
-│   ├── claudio.js           # ✅ Main CLI
+│   ├── hey-claudio.js           # ✅ Main CLI
 │   └── claude-setup.js      # ✅ Setup system
 ├── templates/               # Slash command templates ✅
 │   └── commands/            # Native Claude Code commands
@@ -182,19 +182,19 @@ claude-dev-radar/
 
 ```bash
 # Local testing
-cd claudio
+cd hey-claudio
 npm install
 npm test
 
 # Verify CLI commands
 npm link
-claudio --help
-claudio init
-claudio status
+hey-claudio --help
+hey-claudio init
+hey-claudio status
 
 # Test setup process
 mkdir test-project && cd test-project
-claudio init
+hey-claudio init
 claude  # Test slash commands
 ```
 
@@ -211,7 +211,7 @@ npm view claude-dev-radar
 #### **User Feedback System**:
 ```bash
 # In CLI tools
-claudio status --feedback
+hey-claudio status --feedback
 # Option to send anonymous usage stats
 ```
 
@@ -275,8 +275,8 @@ claudio status --feedback
 ```bash
 # 30-second demo that sells itself
 cd mystery-client-project
-npm i -g claudio            # "Global installation..."
-claudio init                # "Watch as it detects the tech stack..."
+npm i -g hey-claudio            # "Global installation..."
+hey-claudio init                # "Watch as it detects the tech stack..."
 claude                      # "Open Claude Code..."
 /radar:analyze             # "Complete analysis in minutes..."
 /cider:generate EPIC-API "implement authentication"
@@ -317,15 +317,15 @@ claude                      # "Open Claude Code..."
 ### **Option 1: Public NPM (15 minutes)**
 ```bash
 # 1. Prepare package (already configured!)
-cd claudio
+cd hey-claudio
 npm adduser
 
 # 2. Publish
 npm publish
 
 # 3. Test
-npm install -g claudio
-claudio --version
+npm install -g hey-claudio
+hey-claudio --version
 ```
 
 ### **Option 2: GitHub Distribution**
@@ -334,10 +334,10 @@ claudio --version
 # Your repo is at: https://github.com/diaztunjano/claude-dev-radar
 
 # 2. Users install via NPM
-echo "npm i -g claudio"
+echo "npm i -g hey-claudio"
 
 # 3. Professional workflow
-echo "claudio init && claude"
+echo "hey-claudio init && claude"
 ```
 
 ### **Option 3: Private NPM (for premium clients)**
@@ -354,8 +354,8 @@ npm publish  # Only for users with access
 Your repository is **100% ready for publishing**. Here's what's already configured:
 
 ### **✅ Verified Components**:
-- ✅ **package.json**: Correctly configured with `claudio` CLI
-- ✅ **CLI Tools**: Main command (claudio) + setup system implemented
+- ✅ **package.json**: Correctly configured with `hey-claudio` CLI
+- ✅ **CLI Tools**: Main command (hey-claudio) + setup system implemented
 - ✅ **Native Integration**: .claude/ structure with slash commands
 - ✅ **Templates**: Professional slash command templates
 - ✅ **Documentation**: Comprehensive guides and examples
@@ -363,7 +363,7 @@ Your repository is **100% ready for publishing**. Here's what's already configur
 
 ### **📝 Ready to Publish**:
 1. ✅ Repository structure optimized
-2. ✅ Single CLI entry point (`claudio`)
+2. ✅ Single CLI entry point (`hey-claudio`)
 3. ✅ Native Claude Code integration
 4. ✅ Professional slash commands
 

@@ -154,7 +154,7 @@ User Command → CLI Router → Shell Scripts → Claude Code → Analysis Files
 
 ## Quick Setup (30 seconds)
 ```bash
-npm install -g claudio
+npm install -g hey-claudio
 cd your-project
 claude-setup init
 ```

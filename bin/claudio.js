@@ -8,7 +8,7 @@ const path = require('path');
 
 const program = new Command();
 
-// ASCII Art para claudio
+// ASCII Art para HeyClaudio
 function showWelcome() {
   console.log(chalk.cyan(`
    ████████╗██╗      █████╗ ██╗   ██╗██████╗ ██╗ ██████╗
@@ -137,7 +137,7 @@ program
 
 program
   .command('init')
-  .description('🚀 Initialize project with Claudio')
+  .description('🚀 Initialize project with HeyClaudio')
   .action(() => {
     console.log(chalk.blue.bold('🚀 INITIALIZING PROJECT\n'));
 
