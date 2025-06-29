@@ -182,7 +182,7 @@ claude-dev-radar/
 
 ```bash
 # Local testing
-cd claude-dev-radar
+cd claudio
 npm install
 npm test
 
@@ -317,7 +317,7 @@ claude                      # "Open Claude Code..."
 ### **Option 1: Public NPM (15 minutes)**
 ```bash
 # 1. Prepare package (already configured!)
-cd claude-dev-radar
+cd claudio
 npm adduser
 
 # 2. Publish
