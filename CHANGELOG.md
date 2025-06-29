@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `claude-dev-radar` will be documented in this file.
+All notable changes to `claudio` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -84,6 +84,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-- [NPM Package](https://www.npmjs.com/package/claude-dev-radar)
-- [GitHub Repository](https://github.com/yourusername/claude-dev-radar)
-- [Documentation](https://github.com/yourusername/claude-dev-radar/blob/main/README.md)
+- [NPM Package](https://www.npmjs.com/package/claudio)
+- [GitHub Repository](https://github.com/diaztunjano/claude-dev-radar)
+- [Documentation](https://github.com/diaztunjano/claude-dev-radar/blob/main/README.md)

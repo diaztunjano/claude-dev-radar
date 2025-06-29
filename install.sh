@@ -79,14 +79,14 @@ check_prerequisites() {
 # Install package (if available)
 install_package() {
     if [ "$CLI_AVAILABLE" = true ]; then
-        echo -e "${BLUE}>> Installing claude-dev-radar globally...${NC}"
+        echo -e "${BLUE}>> Installing claudio globally...${NC}"
 
         # Try to install from NPM, fallback to local install
-        if npm list -g claude-dev-radar &> /dev/null; then
-            echo -e "${YELLOW}[>] claude-dev-radar already installed, updating...${NC}"
-            npm update -g claude-dev-radar
-        elif npm view claude-dev-radar &> /dev/null; then
-            npm install -g claude-dev-radar
+        if npm list -g claudio &> /dev/null; then
+            echo -e "${YELLOW}[>] claudio already installed, updating...${NC}"
+            npm update -g claudio
+        elif npm view claudio &> /dev/null; then
+            npm install -g claudio
         else
             echo -e "${YELLOW}[!] NPM package not available, using local installation...${NC}"
             # Local installation logic would go here
@@ -110,7 +110,7 @@ setup_project() {
         echo -e "${YELLOW}[>] Initializing Git repository...${NC}"
         git init
         git add .
-        git commit -m "Initial commit with Claude Dev R.A.D.A.R. setup" || true
+        git commit -m "Initial commit with Claudio setup" || true
     fi
 
     # Create .claude structure
@@ -341,10 +341,10 @@ I'll generate a structured issue following C.I.D.E.R. methodology:
 **Ready to generate your issue!**
 EOF
 
-    # Run claude-setup if available
-    if [ "$CLI_AVAILABLE" = true ] && command -v claude-setup &> /dev/null; then
-        echo -e "${BLUE}[>] Running claude-setup quick...${NC}"
-        claude-setup quick
+    # Run claudio setup if available
+    if [ "$CLI_AVAILABLE" = true ] && command -v claudio &> /dev/null; then
+        echo -e "${BLUE}[>] Running claudio init...${NC}"
+        claudio init || true
     fi
 
     # Create .gitignore entries
@@ -376,9 +376,9 @@ show_success() {
 
     if [ "$CLI_AVAILABLE" = true ]; then
         echo -e "${CYAN}>> 🛠️ CLI Commands (Secondary - Use in terminal):${NC}"
-        echo -e "  ${WHITE}claude-radar analyze${NC}     # Full repository analysis"
-        echo -e "  ${WHITE}claude-cider generate${NC}    # Generate issues"
-        echo -e "  ${WHITE}claude-setup init${NC}        # Setup new projects"
+        echo -e "  ${WHITE}claudio analyze${NC}          # Guide to analysis"
+        echo -e "  ${WHITE}claudio init${NC}             # Setup projects"
+        echo -e "  ${WHITE}claudio status${NC}           # Check status"
         echo ""
     fi
 

@@ -1,5 +1,5 @@
 {
-  "name": "claude-dev-radar",
+  "name": "claudio",
   "version": "1.1.0",
   "description": "🤖 Claudio: AI-powered development assistant with R.A.D.A.R. analysis + C.I.D.E.R. atomic issues for Claude IDE",
   "main": "bin/claudio.js",
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "npm link && echo '🚀 Development mode ready! Use: claudio'",
-    "dev-unlink": "npm unlink -g claude-dev-radar",
+    "dev-unlink": "npm unlink -g claudio",
     "install-global": "npm install -g .",
     "test": "node bin/claudio.js --help && echo '✅ Claudio help OK'",
     "test:init": "node bin/claudio.js init --help && echo '✅ Init command OK'",
