@@ -104,6 +104,7 @@ function showCommands() {
   console.log(chalk.white('  claudio init             # Initialize project'));
   console.log(chalk.white('  claudio status           # Show project status'));
   console.log(chalk.white('  claudio check            # Check configuration'));
+  console.log(chalk.white('  claudio update           # Update templates to latest'));
 
   console.log(chalk.cyan('\n🔍 Quick Actions:'));
   console.log(chalk.white('  claudio open             # Open Claude IDE'));
@@ -192,6 +193,18 @@ program
       execSync('claude', { stdio: 'inherit' });
     } catch (error) {
       console.error(chalk.red('❌ Failed to open Claude IDE:'), error.message);
+    }
+  });
+
+program
+  .command('update')
+  .description('🔄 Update Claude templates to latest version')
+  .action(() => {
+    const updateScript = path.join(__dirname, 'claude-update.js');
+    try {
+      execSync(`node "${updateScript}"`, { stdio: 'inherit' });
+    } catch (error) {
+      console.error(chalk.red('❌ Update failed:'), error.message);
     }
   });
 
