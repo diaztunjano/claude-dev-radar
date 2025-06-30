@@ -88,7 +88,8 @@ function createClaudeStructure() {
       '.claude/templates',
       '.claude/commands',
       '.claude/commands/radar',
-      '.claude/commands/cider'
+      '.claude/commands/cider',
+      '.claude/commands/init'
     ];
 
     dirs.forEach(dir => {
@@ -160,7 +161,8 @@ function copySlashCommandTemplates(projectTech) {
       { src: 'cider/generate.template.md', dest: '.claude/commands/cider/generate.md' },
       { src: 'cider/work.template.md', dest: '.claude/commands/cider/work.md' },
       { src: 'cider/status.template.md', dest: '.claude/commands/cider/status.md' },
-      { src: 'cider/list-epics.template.md', dest: '.claude/commands/cider/list-epics.md' }
+      { src: 'cider/list-epics.template.md', dest: '.claude/commands/cider/list-epics.md' },
+      { src: 'init/claude.template.md', dest: '.claude/commands/init/claude.md' }
     ];
 
     templateFiles.forEach(({ src, dest }) => {
@@ -645,15 +647,16 @@ async function setupProject() {
   console.log(chalk.white('  4. Generate issues: /project:cider:generate EPIC-DOCS "improve README"'));
 
   console.log(chalk.cyan('\n📚 Available slash commands:'));
-  console.log(chalk.white('  /project:setup - Project initialization'));
-  console.log(chalk.white('  /project:radar:analyze - Full project analysis'));
-  console.log(chalk.white('  /project:radar:quick - Quick project overview'));
-  console.log(chalk.white('  /project:cider:generate - Create atomic issues'));
-  console.log(chalk.white('  /project:cider:work - Work on specific issue'));
-  console.log(chalk.white('  /project:cider:status - Project status overview'));
-  console.log(chalk.white('  /project:cider:list-epics - Show available epics'));
+  console.log(chalk.white('  /setup - Project initialization'));
+  console.log(chalk.white('  /radar:analyze - Full project analysis'));
+  console.log(chalk.white('  /radar:quick - Quick project overview'));
+  console.log(chalk.white('  /cider:generate - Create atomic issues'));
+  console.log(chalk.white('  /cider:work - Work on specific issue'));
+  console.log(chalk.white('  /cider:status - Project status overview'));
+  console.log(chalk.white('  /cider:list-epics - Show available epics'));
+  console.log(chalk.white('  /init:claude - Generate CLAUDE.md with complete methodology'));
 
-  console.log(chalk.yellow('\n💡 Pro tip: Open Claude Code and run /project:setup to get started!'));
+  console.log(chalk.yellow('\n💡 Pro tip: Open Claude IDE and run /setup to get started!'));
 }
 
 async function quickStart() {
@@ -675,9 +678,10 @@ async function quickStart() {
 
     console.log(chalk.green('\n⚡ Ready to go! Try:'));
     console.log(chalk.white('  claude                 # Open Claude IDE'));
-    console.log(chalk.white('  /project:radar:quick           # Quick analysis'));
-    console.log(chalk.white('  /project:radar:analyze         # Full analysis'));
-    console.log(chalk.white('  /project:cider:generate        # Generate issues'));
+    console.log(chalk.white('  /radar:quick           # Quick analysis'));
+    console.log(chalk.white('  /radar:analyze         # Full analysis'));
+    console.log(chalk.white('  /cider:generate        # Generate issues'));
+    console.log(chalk.white('  /init:claude           # Generate CLAUDE.md'));
 
   } catch (error) {
     spinner.fail('Quick setup failed ❌');

@@ -140,6 +140,7 @@ claude                     # Open Claude IDE
 | `/cider:work ISSUE_NUMBER` | Work on specific issue with guidance |
 | `/cider:status` | Show project and epic status |
 | `/cider:list-epics` | List all available epics |
+| `/init:claude` | Generate CLAUDE.md with complete methodology |
 
 ## 🎨 Example Epic Types
 
