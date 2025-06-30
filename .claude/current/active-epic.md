@@ -28,6 +28,9 @@ Enhance CLI framework with custom commands, especially focusing on CLAUDE.md gen
 3. ✅ Publish new version of HeyClaudio with enhanced command
 4. ✅ Choose next epic from roadmap for continued development
 
+## Issue File
+📁 `.claude/epics/issue-2-claude-md-command.md` - Complete issue specification
+
 ## Business Value
 This epic addresses the critical problem where `claude init` (Claude IDE) doesn't include HeyClaudio's methodology, making HeyClaudio the "perfect assistant" for repo work.
 
